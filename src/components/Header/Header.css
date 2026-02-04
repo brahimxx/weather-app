@@ -1,0 +1,10 @@
+.header-main {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  padding: 15px;
+}
+.header-main img {
+  width: 30px;
+}

@@ -1,0 +1,21 @@
+.title-div {
+  width: 80%;
+  margin: 0 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.title-date {
+  margin-top: -10px;
+}
+.weather-title {
+  font-size: 40px;
+  font-weight: 600;
+  color: #313341;
+}
+
+.title-date {
+  font-size: 20px;
+  font-weight: 500;
+  color: #4e4e4e;
+}

@@ -1,0 +1,36 @@
+.forecast-card-div {
+  background-color: rgba(255, 255, 255, 0.2);
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  border-radius: 25px;
+  padding: 8px;
+}
+
+.time {
+  font-size: 14px;
+}
+
+.forecast-card-div img {
+  width: 40px;
+  height: 40px;
+}
+
+.degree-symbol-small {
+  font-size: 10px;
+  vertical-align: top;
+  font-weight: 500;
+}
+
+.temperature-small {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.selected-forecastcard {
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 15px;
+}

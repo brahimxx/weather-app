@@ -1,0 +1,160 @@
+import "./ForecastCard.css";
+import { useRef, useEffect } from "react";
+import Weathericon from "../../assets/animated_weather/clear-day.svg";
+import React from "react";
+
+const conditionCodeToIcon = {
+  1000: { day: "clear-day.svg", night: "clear-night.svg" }, // Clear
+  1003: { day: "cloudy-1-day.svg", night: "cloudy-1-night.svg" }, // Partly cloudy
+  1006: { day: "cloudy-2-day.svg", night: "cloudy-2-night.svg" }, // Cloudy
+  1009: { day: "cloudy-3-day.svg", night: "cloudy-3-night.svg" }, // Overcast
+  1030: { day: "fog-day.svg", night: "fog-night.svg" }, // Mist
+  1063: { day: "rainy-1-day.svg", night: "rainy-1-night.svg" }, // Patchy rain possible
+
+  1066: { day: "snowy-1-day.svg", night: "snowy-1-night.svg" },
+  1069: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
+  1072: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
+  1087: {
+    day: "isolated-thunderstorms-day.svg",
+    night: "isolated-thunderstorms-night.svg",
+  },
+  1114: { day: "snowy-3-day.svg", night: "snowy-3-night.svg" },
+  1117: { day: "snowy-3-day.svg", night: "snowy-3-night.svg" },
+  1135: { day: "fog.svg", night: "fog.svg" },
+  1147: { day: "frost.svg", night: "frost.svg" },
+  1150: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
+  1153: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
+  1168: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
+  1171: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
+  1180: { day: "rainy-1-day.svg", night: "rainy-1-night.svg" },
+  1183: { day: "rainy-1.svg", night: "rainy-1.svg" },
+  1186: { day: "rainy-2-day.svg", night: "rainy-2-night.svg" },
+  1189: { day: "rainy-2.svg", night: "rainy-2.svg" },
+  1192: { day: "rainy-3-day.svg", night: "rainy-3-night.svg" },
+  1195: { day: "rainy-3.svg", night: "rainy-3.svg" },
+  1198: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
+  1201: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
+  1204: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
+  1207: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
+  1210: { day: "snowy-1-day.svg", night: "snowy-1-night.svg" },
+  1213: { day: "snowy-1.svg", night: "snowy-1.svg" },
+  1216: { day: "snowy-2-day.svg", night: "snowy-2-night.svg" },
+  1219: { day: "snowy-2.svg", night: "snowy-2.svg" },
+  1222: { day: "snowy-3-day.svg", night: "snowy-3-night.svg" },
+  1225: { day: "snowy-3.svg", night: "snowy-3.svg" },
+  1237: { day: "hail.svg", night: "hail.svg" },
+  1240: { day: "rainy-1-day.svg", night: "rainy-1-night.svg" },
+  1243: { day: "rainy-3-day.svg", night: "rainy-3-night.svg" },
+  1246: { day: "rainy-3-day.svg", night: "rainy-3-night.svg" },
+  1249: { day: "rain-and-snow-mix.svg", night: "rain-and-snow-mix.svg" },
+  1252: { day: "rain-and-snow-mix.svg", night: "rain-and-snow-mix.svg" },
+  1255: { day: "snowy-1-day.svg", night: "snowy-1-night.svg" },
+  1258: { day: "snowy-2-day.svg", night: "snowy-2-night.svg" },
+  1261: { day: "hail.svg", night: "hail.svg" },
+  1264: { day: "hail.svg", night: "hail.svg" },
+  1273: {
+    day: "scattered-thunderstorms-day.svg",
+    night: "scattered-thunderstorms-night.svg",
+  },
+  1276: { day: "thunderstorms.svg", night: "thunderstorms.svg" },
+  1279: {
+    day: "scattered-thunderstorms-day.svg",
+    night: "scattered-thunderstorms-night.svg",
+  },
+  1282: { day: "snowy-3.svg", night: "snowy-3.svg" },
+};
+
+const importIcons = (requireContext) => {
+  let icons = {};
+  requireContext.keys().forEach((item) => {
+    icons[item.replace("./", "")] = requireContext(item);
+  });
+  return icons;
+};
+
+const icons = importIcons(
+  require.context("../../assets/animated_weather", false, /\.(svg)$/)
+);
+
+const date = new Date();
+const hour = date.getHours(); // Get the current hour (0-23)
+
+function ForecastCard({ hourInfo, index, city, is_today, is_week, daysInfo }) {
+  const conditionCode =
+    hourInfo?.condition?.code || daysInfo?.day?.condition?.code;
+  const isDay = hourInfo?.is_day === 1 || daysInfo; // Check if it's day or night
+  const iconFileName = conditionCodeToIcon[conditionCode]
+    ? isDay
+      ? conditionCodeToIcon[conditionCode].day // Use day icon if it's day
+      : conditionCodeToIcon[conditionCode].night // Use night icon if it's night
+    : "clear-day.svg"; // Default icon if no match
+  const iconSrc = icons[iconFileName] || Weathericon; // Fallback to default icon if not found
+
+  const targetDivRef = useRef(null); // Reference to the specific div
+
+  useEffect(() => {
+    if (targetDivRef.current) {
+      // Scroll to the div when the component mounts
+      targetDivRef.current.scrollIntoView({
+        behavior: "smooth",
+        inline: "start", // Works better with flexbox
+      });
+    }
+  }, [city]);
+
+  let forecastTime,
+    cardClassName = "forecast-card-div";
+
+  if (hour === index && is_today) {
+    forecastTime = "now";
+    cardClassName += " selected-forecastcard";
+  } else {
+    if (index === 23) {
+      forecastTime = "00:00";
+    } else {
+      forecastTime = String(index + 1).padStart(2, "0") + ":00";
+    }
+  }
+
+  return (
+    <>
+      {is_week !== 2 ? (
+        <div
+          className={cardClassName}
+          ref={hour === index && is_today === 1 ? targetDivRef : null}
+        >
+          {/* Correctly displaying the hour */}
+          <span className="time">{forecastTime}</span>
+
+          {/* Display weather icon from the API data */}
+          <img src={iconSrc} alt="weather icon" />
+
+          <div>
+            {/* Display temperature dynamically */}
+            <span className="temperature-small">{hourInfo.temp_c}</span>
+            <span className="degree-symbol-small">°C</span>
+          </div>
+        </div>
+      ) : (
+        <div className={cardClassName}>
+          {/* Correctly displaying the hour */}
+          <span className="time">
+            {new Date(daysInfo.date).toLocaleDateString("en-US", {
+              weekday: "short",
+            })}
+          </span>
+
+          {/* Display weather icon from the API data */}
+          <img src={iconSrc} alt="weather icon" />
+          <div>
+            {/* Display temperature dynamically */}
+            <span className="temperature-small">{daysInfo.day.maxtemp_c}</span>
+            <span className="degree-symbol-small">°C</span>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+export default ForecastCard;

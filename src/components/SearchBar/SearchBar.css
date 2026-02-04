@@ -1,0 +1,91 @@
+.search-box {
+  top: 50%;
+  left: 50%;
+
+  background: #2f3640;
+  height: 40px;
+  border-radius: 40px;
+  padding: 10px;
+  z-index: 2;
+}
+
+.search-text:focus {
+  width: 240px;
+  padding: 0 6px;
+}
+
+.search-box:hover > .search-text {
+  width: 240px;
+  padding: 0 6px;
+}
+
+.search-box:hover > .search-btn {
+  background: white;
+  color: black;
+}
+
+.search-btn {
+  color: #ffffff;
+  float: right;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2f3640;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.4s;
+  text-decoration: none;
+  border: none;
+}
+.search-btn > img {
+  font-size: 30px;
+}
+.search-text {
+  border: none;
+  background: none;
+  outline: none;
+  float: left;
+  padding: 0;
+  color: white;
+  font-size: 16px;
+  font-weight: normal;
+  transition: 0.4s;
+  line-height: 40px;
+  width: 0px;
+}
+
+img {
+  width: 20px;
+}
+
+.search-text.hidden {
+  display: none;
+}
+
+.search-text.visible {
+  display: block;
+}
+
+.autocomplete-suggestions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  background: #2f3640;
+  max-height: 240px;
+  max-width: 304px;
+  width: 312px;
+  color: white;
+  top: 45px;
+  padding: 20px 0 20px 8px;
+  border-radius: 0px 0px 40px 40px;
+}
+
+.autocomplete-suggestions li {
+  padding: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
