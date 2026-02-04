@@ -1,39 +1,69 @@
 .theweader-div {
-  height: 160px;
-  margin: 0px 20px 20px 20px;
+  height: auto;
+  max-height: 140px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  color: #303345;
+  color: var(--color-text-primary);
+  background: var(--color-glass-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm) var(--space-md);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-glass-border);
+  flex-shrink: 0;
 }
 
 .theweader-div img {
-  width: 200px;
-  filter: drop-shadow(0 0 0.75rem rgb(91, 90, 90));
+  width: clamp(80px, 15vw, 120px);
+  height: auto;
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
 }
 
 .theweader-div-text {
-  width: 150px;
   display: flex;
   flex-direction: column;
-  margin-right: 20px;
+  align-items: flex-end;
+  text-align: right;
+  gap: var(--space-xs);
 }
 
 .temp {
-  font-size: 60px;
-
-  font-weight: 600;
+  font-size: clamp(36px, 8vw, 48px);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+  line-height: 1;
 }
 
 .weather-description {
-  margin-top: -5px;
-  margin-left: 5px;
-  font-size: 25px;
-  color: #555;
+  font-size: clamp(14px, 2.5vw, 18px);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  margin: 0;
 }
 
 .degree-symbol {
-  font-size: 1.5rem;
-  vertical-align: top;
+  font-size: 0.4em;
+  vertical-align: super;
+  font-weight: 500;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .theweader-div {
+    margin: var(--space-sm) 0;
+    padding: var(--space-md);
+    max-height: 150px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .theweader-div {
+    margin: var(--space-xs) var(--space-sm);
+    padding: var(--space-sm);
+    max-height: 110px;
+  }
 }

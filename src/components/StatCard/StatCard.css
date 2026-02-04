@@ -1,39 +1,111 @@
 .stat-div {
-  margin: 5px 20px;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.2);
+  flex: 1;
+  border-radius: var(--radius-md);
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-glass-border);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0 30px 0 20px;
+  padding: var(--space-xs) var(--space-sm);
   align-items: center;
-  height: 70px;
+  min-height: 50px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  color: var(--color-text-primary);
+  font-weight: 500;
 }
+
+.stat-div:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: var(--color-glass-bg-hover);
+}
+
 .icon-text-div {
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 150px;
-  text-align: left;
-  justify-content: space-between;
-  font-weight: 400;
-  font-size: 15px;
+  gap: var(--space-sm);
+  font-weight: 500;
+  font-size: 12px;
 }
 
-.icon-text-div p {
-  width: 100px;
+.stat-name {
+  margin: 0;
+  color: var(--color-text-secondary);
 }
 
 .stat-icon {
-  width: 40px;
-  height: 40px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-  filter: drop-shadow(0 0 0.75rem rgb(150, 150, 150));
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  background: linear-gradient(
+    135deg,
+    var(--color-accent-start) 0%,
+    var(--color-accent-end) 100%
+  );
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-accent);
+  transition: transform 0.3s ease;
 }
 
-.stat-icon img {
-  width: 40px;
-  height: 40px;
+.stat-div:hover .stat-icon {
+  transform: scale(1.05);
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .stat-div {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-sm);
+    min-height: 70px;
+    gap: var(--space-xs);
+  }
+
+  .icon-text-div {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .stat-value {
+    font-size: 15px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .stat-div {
+    padding: var(--space-xs);
+    min-height: 44px;
+  }
+
+  .icon-text-div {
+    font-size: 13px;
+    gap: var(--space-xs);
+  }
+
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    padding: 5px;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
 }

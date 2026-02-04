@@ -1,12 +1,35 @@
 .forecast-container {
   display: flex;
   flex-direction: row;
-  gap: 12px;
+  gap: var(--space-xs);
   width: 100%;
-  overflow-y: scroll;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  margin: 10px 0px;
-  justify-self: center;
-  align-self: center;
+  margin: 0;
+  padding: var(--space-xs) var(--space-md);
+  scroll-snap-type: x mandatory;
+  min-height: 0;
+}
+
+.forecast-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .forecast-container {
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-md);
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .forecast-container {
+    gap: 4px;
+    padding: 4px var(--space-sm);
+  }
 }

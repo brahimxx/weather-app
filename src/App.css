@@ -1,32 +1,67 @@
+/* ===========================================
+   App Styles
+   =========================================== */
 .App {
   text-align: center;
-  margin-top: 50px;
 }
 
+/* ===========================================
+   Form Elements - Global Overrides
+   =========================================== */
 input {
-  padding: 10px;
-  margin-right: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-glass-border);
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-primary);
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border: 1px solid var(--color-accent-start);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 button {
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #4caf50;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--color-accent-start) 0%, var(--color-accent-end) 100%);
   color: white;
   border: none;
   cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-accent);
 }
 
 button:hover {
-  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: rgba(102, 126, 234, 0.5) 0px 8px 20px;
 }
 
+button:active {
+  transform: translateY(0);
+}
+
+button:focus {
+  outline: 2px solid var(--color-accent-start);
+  outline-offset: 2px;
+}
+
+/* ===========================================
+   Typography
+   =========================================== */
 h2 {
-  margin-top: 20px;
+  margin-top: var(--space-md);
+  color: var(--color-text-primary);
+  font-weight: 700;
 }
 
 p {
-  font-size: 1.2em;
+  font-size: 1.1em;
+  color: var(--color-text-primary);
 }

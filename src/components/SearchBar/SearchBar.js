@@ -7,7 +7,7 @@ const SearchBar = ({ onClick }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [isInputOpen, setIsInputOpen] = useState(false);
-  const [isInputFocused, setIsInputFocused] = useState(false); // Track if input is focused
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -16,22 +16,21 @@ const SearchBar = ({ onClick }) => {
         const data = await fetchData("search", searchQuery);
         setSuggestions(data);
       } else {
-        setSuggestions([]); // Clear suggestions if the query is too short
+        setSuggestions([]);
       }
     };
 
     if (searchQuery.length > 2) {
       getAutoComplete();
     }
-  }, [searchQuery]); // This effect will run whenever searchQuery changes
+  }, [searchQuery]);
 
   const handleInputChange = (e) => {
-    setSearchQuery(e.target.value); // Update the input state with the current value
+    setSearchQuery(e.target.value);
   };
 
   const handleFormSubmit = (e) => {
-    inputRef.current.focus(); // Focus on the input element
-    console.log("^" + searchQuery + ".*");
+    inputRef.current.focus();
     if (searchQuery !== "" && isInputFocused) {
       onClick("^" + searchQuery + ".*");
     } else if (suggestions.length && searchQuery === "") {
@@ -40,30 +39,29 @@ const SearchBar = ({ onClick }) => {
   };
 
   const handleSuggestionClick = (city) => {
-    console.log("clicked");
-    setSearchQuery(city); // Set the search query to the clicked suggestion
-    onClick("^" + city + ".*"); // Trigger the search for the selected city
-    setSuggestions([]); // Clear the autocomplete suggestions after selecting
+    setSearchQuery(city);
+    onClick("^" + city + ".*");
+    setSuggestions([]);
   };
 
   return (
-    <>
-      <form className={`search-box`}>
+    <div className="search-wrapper">
+      <form className="search-box">
         <input
-          className={`search-text`}
+          className="search-text"
           type="text"
           placeholder="Enter city"
           value={searchQuery}
           ref={inputRef}
-          onChange={handleInputChange} // Handle user typing
+          onChange={handleInputChange}
           onFocus={() => {
             setIsInputFocused(true);
             setIsInputOpen(true);
-          }} // Set input as focused
+          }}
           onBlur={() => {
             setTimeout(() => setIsInputFocused(false), 200);
             setIsInputOpen(false);
-          }} // Set input as blurred with slight delay to allow click on suggestions
+          }}
         />
         <button
           type="button"
@@ -72,8 +70,9 @@ const SearchBar = ({ onClick }) => {
             handleFormSubmit();
             setIsInputOpen(!isInputOpen);
           }}
+          aria-label="Search"
         >
-          <i className="fas fa-search"></i> {/* Font Awesome icon for search */}
+          <i className="fas fa-search"></i>
         </button>
       </form>
 
@@ -92,7 +91,7 @@ const SearchBar = ({ onClick }) => {
       )}
 
       <UserLocation onClick={onClick} />
-    </>
+    </div>
   );
 };
 

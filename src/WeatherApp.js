@@ -42,8 +42,15 @@ function WeatherApp() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div style={{ textAlign: 'center' }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
           <h2>Loading weather data...</h2>
         </div>
       </div>
@@ -52,9 +59,16 @@ function WeatherApp() {
 
   if (error) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h2 style={{ color: 'red' }}>{error}</h2>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <h2 style={{ color: "red" }}>{error}</h2>
           <button onClick={() => setCity("Algiers")}>Try Again</button>
         </div>
       </div>
@@ -62,14 +76,14 @@ function WeatherApp() {
   }
 
   return (
-    <>
+    <div className="weather-app-container">
       <Header onClick={handleClick} />
       <WeatherTitle weatherInfo={weatherInfo} />
       <TheWeather weatherInfo={weatherInfo} />
       <StatCardsContainer weatherInfo={weatherInfo} />
       <TabNav onChange={handleChange} value={value} />
       <ForecastCardsContainer city={city} navBarState={value} />
-    </>
+    </div>
   );
 }
 

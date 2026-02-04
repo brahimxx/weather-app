@@ -1,3 +1,21 @@
 .stats-container {
-  margin-top: -5px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+/* Desktop - Horizontal Layout */
+@media (min-width: 768px) {
+  .stats-container {
+    flex-direction: row;
+    gap: var(--space-sm);
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .stats-container {
+    gap: var(--space-xs);
+  }
 }

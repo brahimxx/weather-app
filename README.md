@@ -22,22 +22,26 @@ A modern, responsive weather application built with React that provides current 
 ## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/brahimxx/weather-app.git
 cd weather-app
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Create a `.env` file in the root directory and add your WeatherAPI key:
+
 ```env
 REACT_APP_WEATHER_API_KEY=your_api_key_here
 ```
 
 4. Start the development server:
+
 ```bash
 npm start
 ```
@@ -47,12 +51,15 @@ The app will open at [http://localhost:3000](http://localhost:3000)
 ## Available Scripts
 
 ### `npm start`
+
 Runs the app in development mode.
 
 ### `npm test`
+
 Launches the test runner in interactive watch mode.
 
 ### `npm run build`
+
 Builds the app for production to the `build` folder.
 
 ## Project Structure
