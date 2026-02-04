@@ -10,11 +10,22 @@ import ForecastCardsContainer from "./components/ForecastCardsContainer/Forecast
 function WeatherApp() {
   const [city, setCity] = useState("Algiers");
   const [weatherInfo, setWeatherInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const getWeather = async () => {
-      const data = await fetchData("current", city); // Pass "current" for current weather data
-      setWeatherInfo(data);
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchData("current", city);
+        setWeatherInfo(data);
+      } catch (err) {
+        setError("Failed to fetch weather data. Please try again.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
     getWeather();
   }, [city]);
@@ -28,6 +39,27 @@ function WeatherApp() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <h2>Loading weather data...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{ color: 'red' }}>{error}</h2>
+          <button onClick={() => setCity("Algiers")}>Try Again</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
