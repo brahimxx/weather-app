@@ -1,15 +1,13 @@
-import "./TheWeather.css";
-import Weathericon from "../../assets/icons/cludy.png"; // Fallback icon
+import React from "react";
+import Weathericon from "../assets/icons/cludy.png";
 
-// Map condition codes to day and night specific icons
 const conditionCodeToIcon = {
-  1000: { day: "clear-day.svg", night: "clear-night.svg" }, // Clear
-  1003: { day: "cloudy-1-day.svg", night: "cloudy-1-night.svg" }, // Partly cloudy
-  1006: { day: "cloudy-2-day.svg", night: "cloudy-2-night.svg" }, // Cloudy
-  1009: { day: "cloudy-3-day.svg", night: "cloudy-3-night.svg" }, // Overcast
-  1030: { day: "fog-day.svg", night: "fog-night.svg" }, // Mist
-  1063: { day: "rainy-1-day.svg", night: "rainy-1-night.svg" }, // Patchy rain possible
-
+  1000: { day: "clear-day.svg", night: "clear-night.svg" },
+  1003: { day: "cloudy-1-day.svg", night: "cloudy-1-night.svg" },
+  1006: { day: "cloudy-2-day.svg", night: "cloudy-2-night.svg" },
+  1009: { day: "cloudy-3-day.svg", night: "cloudy-3-night.svg" },
+  1030: { day: "fog-day.svg", night: "fog-night.svg" },
+  1063: { day: "rainy-1-day.svg", night: "rainy-1-night.svg" },
   1066: { day: "snowy-1-day.svg", night: "snowy-1-night.svg" },
   1069: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
   1072: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
@@ -34,7 +32,6 @@ const conditionCodeToIcon = {
   1198: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
   1201: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
   1204: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
-
   1207: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
   1210: { day: "snowy-1-day.svg", night: "snowy-1-night.svg" },
   1213: { day: "snowy-1.svg", night: "snowy-1.svg" },
@@ -64,7 +61,6 @@ const conditionCodeToIcon = {
   1282: { day: "snowy-3.svg", night: "snowy-3.svg" },
 };
 
-// Function to import all icons from the folder
 const importIcons = (requireContext) => {
   let icons = {};
   requireContext.keys().forEach((item) => {
@@ -73,39 +69,53 @@ const importIcons = (requireContext) => {
   return icons;
 };
 
-// Import icons from the animated_weather folder
 const icons = importIcons(
-  require.context("../../assets/animated_weather", false, /\.(svg)$/)
+  require.context("../assets/animated_weather", false, /\.(svg)$/),
 );
 
-const TheWeather = ({ weatherInfo }) => {
-  const conditionCode = weatherInfo?.current?.condition?.code;
-  const isDay = weatherInfo?.current?.is_day === 1; // Check if it's day or night
+const TheWeather = ({ weatherInfo, selectedHourData }) => {
+  // Use selectedHourData if available, otherwise use current weather
+  const displayData = selectedHourData || weatherInfo?.current;
+
+  const conditionCode = displayData?.condition?.code;
+  const isDay = displayData?.is_day === 1;
   const iconFileName = conditionCodeToIcon[conditionCode]
     ? isDay
-      ? conditionCodeToIcon[conditionCode].day // Use day icon if it's day
-      : conditionCodeToIcon[conditionCode].night // Use night icon if it's night
-    : "clear-day.svg"; // Default icon if no match
-  const iconSrc = icons[iconFileName] || Weathericon; // Fallback to default icon if not found
+      ? conditionCodeToIcon[conditionCode].day
+      : conditionCodeToIcon[conditionCode].night
+    : "clear-day.svg";
+  const iconSrc = icons[iconFileName] || Weathericon;
 
   return (
-    <>
-      <div className="theweader-div">
-        <img src={iconSrc} alt="Weather Icon" />
+    <div
+      className="max-h-[160px] flex flex-row justify-between items-center text-text-primary rounded-[20px] p-2 px-4 md:p-4 max-[480px]:p-2"
+      style={{
+        background: "rgba(255, 255, 255, 0.3)",
+        boxShadow: "rgba(0, 0, 0, 0.1) 0px 8px 24px",
+        backdropFilter: "blur(10px)",
+        border: "1px solid rgba(255, 255, 255, 0.3)",
+      }}
+    >
+      <img
+        src={iconSrc}
+        alt="Weather Icon"
+        className="w-[clamp(80px,15vw,170px)] h-full"
+        style={{ filter: "drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2))" }}
+      />
 
-        <div className="theweader-div-text">
-          <div className="temp">
-            <span className="temperature">
-              {weatherInfo?.current?.temp_c || "19"}
-            </span>
-            <span className="degree-symbol">°C</span>
-          </div>
-          <p className="weather-description">
-            {weatherInfo?.current?.condition?.text || "Rainy"}
-          </p>
+      <div className="flex flex-col items-end text-right gap-1">
+        <div
+          className="text-[clamp(36px,8vw,48px)] font-bold text-text-primary leading-none"
+          style={{ textShadow: "2px 2px 4px rgba(255, 255, 255, 0.5)" }}
+        >
+          <span>{displayData?.temp_c || "19"}</span>
+          <span className="text-[0.4em] align-super font-medium">°C</span>
         </div>
+        <p className="text-[clamp(14px,2.5vw,18px)] text-text-secondary font-medium m-0">
+          {displayData?.condition?.text || "Rainy"}
+        </p>
       </div>
-    </>
+    </div>
   );
 };
 

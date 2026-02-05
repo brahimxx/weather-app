@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import fetchData from "./services/api";
-import Header from "./components/Header/Header";
-import WeatherTitle from "./components/WeatherTitle/WeatherTitle";
-import TheWeather from "./components/TheWeather/TheWeather";
-import StatCardsContainer from "./components/StatCardsContainer/StatCardsContainer";
-import TabNav from "./components/TabNav/TabNav";
-import ForecastCardsContainer from "./components/ForecastCardsContainer/ForecastCardsContainer";
+import Header from "./components/Header";
+import WeatherTitle from "./components/WeatherTitle";
+import TheWeather from "./components/TheWeather";
+import StatCardsContainer from "./components/StatCardsContainer";
+import ForecastCardsContainer from "./components/ForecastCardsContainer";
 
 function WeatherApp() {
   const [city, setCity] = useState("Algiers");
   const [weatherInfo, setWeatherInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedHourData, setSelectedHourData] = useState(null);
 
   useEffect(() => {
     const getWeather = async () => {
@@ -33,11 +33,11 @@ function WeatherApp() {
   const handleClick = (newCity) => {
     console.log(newCity);
     setCity(newCity); // Update the city state
+    setSelectedHourData(null); // Reset selected hour when city changes
   };
 
-  const [value, setValue] = useState(0); // the nav bar handler
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleHourSelect = (hourData) => {
+    setSelectedHourData(hourData);
   };
 
   if (loading) {
@@ -76,13 +76,18 @@ function WeatherApp() {
   }
 
   return (
-    <div className="weather-app-container">
+    <div className="flex flex-col justify-between p-2 h-full overflow-hidden md:p-5 md:h-[90vh] lg:p-8">
       <Header onClick={handleClick} />
       <WeatherTitle weatherInfo={weatherInfo} />
-      <TheWeather weatherInfo={weatherInfo} />
-      <StatCardsContainer weatherInfo={weatherInfo} />
-      <TabNav onChange={handleChange} value={value} />
-      <ForecastCardsContainer city={city} navBarState={value} />
+      <TheWeather
+        weatherInfo={weatherInfo}
+        selectedHourData={selectedHourData}
+      />
+      <StatCardsContainer
+        weatherInfo={weatherInfo}
+        selectedHourData={selectedHourData}
+      />
+      <ForecastCardsContainer city={city} onHourSelect={handleHourSelect} />
     </div>
   );
 }

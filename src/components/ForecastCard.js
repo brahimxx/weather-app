@@ -1,6 +1,5 @@
-import "./ForecastCard.css";
 import { useRef, useEffect } from "react";
-import Weathericon from "../../assets/animated_weather/clear-day.svg";
+import Weathericon from "../assets/animated_weather/clear-day.svg";
 import React from "react";
 
 const conditionCodeToIcon = {
@@ -73,13 +72,22 @@ const importIcons = (requireContext) => {
 };
 
 const icons = importIcons(
-  require.context("../../assets/animated_weather", false, /\.(svg)$/)
+  require.context("../assets/animated_weather", false, /\.(svg)$/),
 );
 
 const date = new Date();
 const hour = date.getHours(); // Get the current hour (0-23)
 
-function ForecastCard({ hourInfo, index, city, is_today, is_week, daysInfo }) {
+function ForecastCard({
+  hourInfo,
+  index,
+  city,
+  is_today,
+  is_week,
+  daysInfo,
+  onHourSelect,
+  isSelected,
+}) {
   const conditionCode =
     hourInfo?.condition?.code || daysInfo?.day?.condition?.code;
   const isDay = hourInfo?.is_day === 1 || daysInfo; // Check if it's day or night
@@ -91,23 +99,43 @@ function ForecastCard({ hourInfo, index, city, is_today, is_week, daysInfo }) {
   const iconSrc = icons[iconFileName] || Weathericon; // Fallback to default icon if not found
 
   const targetDivRef = useRef(null); // Reference to the specific div
+  const cardRef = useRef(null); // Reference for selected card
+
+  const handleClick = () => {
+    if (onHourSelect && hourInfo && !is_week) {
+      onHourSelect(hourInfo);
+    }
+  };
 
   useEffect(() => {
     if (targetDivRef.current) {
       // Scroll to the div when the component mounts
       targetDivRef.current.scrollIntoView({
         behavior: "smooth",
-        inline: "start", // Works better with flexbox
+        inline: "center",
+        block: "nearest",
       });
     }
   }, [city]);
 
+  // Scroll to center when selected
+  useEffect(() => {
+    if (isSelected && cardRef.current) {
+      cardRef.current.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  }, [isSelected]);
+
   let forecastTime,
     cardClassName = "forecast-card-div";
 
-  if (hour === index && is_today) {
+  const isCurrentHour = hour === index && is_today;
+
+  if (isCurrentHour) {
     forecastTime = "now";
-    cardClassName += " selected-forecastcard";
   } else {
     if (index === 23) {
       forecastTime = "00:00";
@@ -116,40 +144,111 @@ function ForecastCard({ hourInfo, index, city, is_today, is_week, daysInfo }) {
     }
   }
 
+  if (isSelected) {
+    cardClassName += " selected-forecastcard";
+  }
+
+  const baseCardClass =
+    "min-w-[65px] min-h-[80px] max-h-[120px] flex flex-col justify-center items-center gap-1 rounded-2xl p-1 transition-all duration-300 cursor-pointer flex-shrink-0 scroll-snap-align-start hover:-translate-y-1 md:min-w-[70px] md:min-h-[90px] md:py-1 md:px-2 max-[480px]:min-w-14 max-[480px]:min-h-[75px] max-[480px]:p-1 max-[480px]:rounded-xl";
+  const isHighlighted = cardClassName.includes("selected");
+
   return (
     <>
       {is_week !== 2 ? (
         <div
-          className={cardClassName}
-          ref={hour === index && is_today === 1 ? targetDivRef : null}
+          className={baseCardClass}
+          ref={(el) => {
+            if (hour === index && is_today === 1) {
+              targetDivRef.current = el;
+            }
+            cardRef.current = el;
+          }}
+          onClick={handleClick}
+          style={{
+            background: isHighlighted
+              ? "rgba(255, 255, 255, 0.8)"
+              : "rgba(255, 255, 255, 0.25)",
+            backdropFilter: "blur(10px)",
+            border: isHighlighted
+              ? "2px solid rgba(132, 126, 234, 0.8)"
+              : "1px solid rgba(255, 255, 255, 0.3)",
+            boxShadow: isHighlighted
+              ? "rgba(102, 126, 234, 0.3) 0px 5px 15px"
+              : "rgba(0, 0, 0, 0.08) 0px 4px 12px",
+            transform: isHighlighted ? "translateY(-2px)" : "none",
+          }}
+          onMouseEnter={(e) => {
+            if (!isHighlighted) {
+              e.currentTarget.style.boxShadow =
+                "rgba(0, 0, 0, 0.1) 0px 8px 24px";
+              e.currentTarget.style.background = "rgba(255, 255, 255, 0.35)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isHighlighted) {
+              e.currentTarget.style.boxShadow =
+                "rgba(0, 0, 0, 0.08) 0px 4px 12px";
+              e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+            }
+          }}
         >
-          {/* Correctly displaying the hour */}
-          <span className="time">{forecastTime}</span>
-
-          {/* Display weather icon from the API data */}
-          <img src={iconSrc} alt="weather icon" />
-
+          <span
+            className={`text-[11px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis max-w-full text-center md:text-xs max-[480px]:text-[10px] ${isSelected ? "text-accent-start font-bold" : "text-text-primary"}`}
+          >
+            {forecastTime}
+          </span>
+          <img
+            src={iconSrc}
+            alt="weather icon"
+            className="w-8 h-8 flex-shrink-0 md:w-9 md:h-9 max-[480px]:w-7 max-[480px]:h-7"
+            style={{ filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))" }}
+          />
           <div>
-            {/* Display temperature dynamically */}
-            <span className="temperature-small">{hourInfo.temp_c}</span>
-            <span className="degree-symbol-small">°C</span>
+            <span className="text-[13px] font-bold text-text-primary md:text-sm max-[480px]:text-xs">
+              {hourInfo.temp_c}
+            </span>
+            <span className="text-[10px] align-super font-semibold text-text-secondary max-[480px]:text-[7px]">
+              °C
+            </span>
           </div>
         </div>
       ) : (
-        <div className={cardClassName}>
-          {/* Correctly displaying the hour */}
-          <span className="time">
+        <div
+          className={baseCardClass}
+          style={{
+            background: "rgba(255, 255, 255, 0.25)",
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(255, 255, 255, 0.3)",
+            boxShadow: "rgba(0, 0, 0, 0.08) 0px 4px 12px",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = "rgba(0, 0, 0, 0.1) 0px 8px 24px";
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.35)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow =
+              "rgba(0, 0, 0, 0.08) 0px 4px 12px";
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+          }}
+        >
+          <span className="text-[11px] font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis max-w-full text-center md:text-xs max-[480px]:text-[10px]">
             {new Date(daysInfo.date).toLocaleDateString("en-US", {
               weekday: "short",
             })}
           </span>
-
-          {/* Display weather icon from the API data */}
-          <img src={iconSrc} alt="weather icon" />
+          <img
+            src={iconSrc}
+            alt="weather icon"
+            className="w-8 h-8 flex-shrink-0 md:w-9 md:h-9 max-[480px]:w-7 max-[480px]:h-7"
+            style={{ filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))" }}
+          />
           <div>
-            {/* Display temperature dynamically */}
-            <span className="temperature-small">{daysInfo.day.maxtemp_c}</span>
-            <span className="degree-symbol-small">°C</span>
+            <span className="text-[13px] font-bold text-text-primary md:text-sm max-[480px]:text-xs">
+              {daysInfo.day.maxtemp_c}
+            </span>
+            <span className="text-[10px] align-super font-semibold text-text-secondary max-[480px]:text-[7px]">
+              °C
+            </span>
           </div>
         </div>
       )}

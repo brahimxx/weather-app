@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import CurrentLocation from "../../assets/icons/current-location.svg";
+import CurrentLocation from "../assets/icons/current-location.svg";
+
 function UserLocation({ onClick }) {
   const [location, setLocation] = useState({
     latitude: null,
     longitude: null,
   });
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -16,12 +16,12 @@ function UserLocation({ onClick }) {
             longitude: position.coords.longitude + "",
           });
         },
-        (error) => {
-          setError(error.message);
-        }
+        (err) => {
+          console.error("Geolocation error:", err.message);
+        },
       );
     } else {
-      setError("Geolocation is not supported by your browser.");
+      console.error("Geolocation is not supported by your browser.");
     }
   }, []);
 
@@ -29,7 +29,8 @@ function UserLocation({ onClick }) {
     <img
       src={CurrentLocation}
       onClick={() => onClick(location.latitude + "," + location.longitude)}
-      className="location-btn"
+      className="cursor-pointer"
+      alt="Current Location"
     />
   );
 }

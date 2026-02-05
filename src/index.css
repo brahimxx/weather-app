@@ -1,85 +1,84 @@
-/* ===========================================
-   CSS Custom Properties (Design Tokens)
-   =========================================== */
-:root {
-  /* Spacing Scale */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  /* Colors */
-  --color-text-primary: #1a1a2e;
-  --color-text-secondary: #2d2d44;
-  --color-accent-start: #667eea;
-  --color-accent-end: #764ba2;
-  --color-glass-bg: rgba(255, 255, 255, 0.3);
-  --color-glass-bg-hover: rgba(255, 255, 255, 0.4);
-  --color-glass-border: rgba(255, 255, 255, 0.3);
+@layer base {
+  :root {
+    /* Light theme (default) */
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-overlay: rgba(255, 255, 255, 0.9);
+    --bg-glass: rgba(255, 255, 255, 0.3);
+    --bg-glass-hover: rgba(255, 255, 255, 0.5);
+    --bg-selected: rgba(255, 255, 255, 0.8);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --border-primary: rgba(148, 163, 184, 0.3);
+    --border-selected: rgba(132, 126, 234, 0.8);
+    --shadow-sm: rgba(0, 0, 0, 0.08) 0px 4px 12px;
+    --shadow-md: rgba(0, 0, 0, 0.1) 0px 8px 24px;
+    --shadow-lg: rgba(0, 0, 0, 0.2) 0px 20px 60px;
+    --shadow-accent: rgba(102, 126, 234, 0.3) 0px 5px 15px;
+    --accent-start: #06b6d4;
+    --accent-end: #8b5cf6;
+  }
 
-  /* Shadows */
-  --shadow-sm: rgba(0, 0, 0, 0.08) 0px 4px 12px;
-  --shadow-md: rgba(0, 0, 0, 0.1) 0px 8px 24px;
-  --shadow-lg: rgba(0, 0, 0, 0.15) 0px 12px 32px;
-  --shadow-accent: rgba(102, 126, 234, 0.3) 0px 5px 15px;
+  [data-theme="dark"] {
+    /* Dark theme */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-overlay: rgba(15, 23, 42, 0.9);
+    --bg-glass: rgba(255, 255, 255, 0.05);
+    --bg-glass-hover: rgba(255, 255, 255, 0.1);
+    --bg-selected: rgba(255, 255, 255, 0.15);
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --border-primary: rgba(148, 163, 184, 0.2);
+    --border-selected: rgba(132, 126, 234, 0.6);
+    --shadow-sm: rgba(0, 0, 0, 0.3) 0px 4px 12px;
+    --shadow-md: rgba(0, 0, 0, 0.4) 0px 8px 24px;
+    --shadow-lg: rgba(0, 0, 0, 0.6) 0px 20px 60px;
+    --shadow-accent: rgba(102, 126, 234, 0.4) 0px 5px 15px;
+    --accent-start: #06b6d4;
+    --accent-end: #8b5cf6;
+  }
 
-  /* Border Radius */
-  --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 20px;
-  --radius-xl: 24px;
-  --radius-round: 50px;
+  body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    font-family:
+      "Poppins",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Roboto",
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--bg-primary);
+    transition: background 0.3s ease;
+  }
 
-  /* Component Sizes */
-  --search-height: 48px;
-  --search-button-size: 36px;
-}
+  body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--bg-glass);
+    transition: background 0.3s ease;
+  }
 
-/* ===========================================
-   Base Reset & Global Styles
-   =========================================== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family:
-    "Poppins",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    "Roboto",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(
-    -45deg,
-    #667eea 0%,
-    #764ba2 25%,
-    #f093fb 50%,
-    #4facfe 75%,
-    #00f2fe 100%
-  );
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
-  height: 100vh;
-  overflow: hidden;
-  position: relative;
-}
-
-body::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.1);
-  pointer-events: none;
+  #root {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    height: 100%;
+    max-width: 500px !important;
+    background-color: var(--bg-secondary);
+    transition: background-color 0.3s ease;
+  }
 }
 
 @keyframes gradient {
@@ -94,75 +93,30 @@ body::before {
   }
 }
 
-#root {
-  position: relative;
-  z-index: 1;
-  height: 100vh;
-  overflow: hidden;
-  max-width: 600px !important;
-}
-
-/* ===========================================
-   Main App Container - Viewport Fitting
-   =========================================== */
-.weather-app-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: var(--space-sm);
-  overflow: hidden;
-}
-
-/* ===========================================
-   Responsive Breakpoints
-   =========================================== */
-
-/* Mobile - Default styles above */
-
-/* Tablet (768px - 1024px) */
+/* Responsive Breakpoints */
 @media (min-width: 768px) {
-  :root {
-    --space-md: 20px;
-    --space-lg: 28px;
-    --space-xl: 40px;
+  #root {
+    height: 90vh;
   }
 
   body {
-    padding: var(--space-md);
-  }
-
-  .weather-app-container {
-    padding: var(--space-md);
-    height: 100%;
+    padding: 1.25rem;
   }
 }
 
-/* Desktop (1024px+) */
 @media (min-width: 1024px) {
-  :root {
-    --space-md: 24px;
-    --space-lg: 32px;
-  }
-
   #root {
-    max-width: 1000px;
-    height: calc(100vh - 40px);
-    margin: 20px auto;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: var(--radius-xl);
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 60px;
+    max-width: 800px;
+    margin: 1.25rem auto;
+    border-radius: 1.5rem;
+    background: var(--bg-glass);
+    box-shadow: var(--shadow-lg);
     backdrop-filter: blur(10px);
   }
-
-  .weather-app-container {
-    padding: var(--space-lg);
-    height: 100%;
-  }
 }
 
-/* Large Desktop (1200px+) */
 @media (min-width: 1200px) {
   #root {
-    max-width: 1000px;
+    max-width: 800px;
   }
 }
