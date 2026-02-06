@@ -88,33 +88,27 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
 
   return (
     <div
-      className="max-h-[160px] flex flex-row justify-between items-center text-text-primary rounded-[20px] p-2 px-4 md:p-4 max-[480px]:p-2"
+      className="min-h-[170px] flex flex-row justify-between items-center text-text-primary rounded-[30px] p-2 px-4 md:p-4 md:px-6 max-[480px]:p-2"
       style={{
-        background: "rgba(255, 255, 255, 0.3)",
-        boxShadow: "rgba(0, 0, 0, 0.1) 0px 8px 24px",
+        background: "var(--bg-glass)",
         backdropFilter: "blur(10px)",
-        border: "1px solid rgba(255, 255, 255, 0.3)",
       }}
     >
-      <img
-        src={iconSrc}
-        alt="Weather Icon"
-        className="w-[clamp(80px,15vw,170px)] h-full"
-        style={{ filter: "drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2))" }}
-      />
-
-      <div className="flex flex-col items-end text-right gap-1">
-        <div
-          className="text-[clamp(36px,8vw,48px)] font-bold text-text-primary leading-none"
-          style={{ textShadow: "2px 2px 4px rgba(255, 255, 255, 0.5)" }}
-        >
+      <div className="flex flex-col  gap-1">
+        <p className="text-[clamp(8px,2vw,14px)] text-text-secondary font-medium m-0">
+          {displayData?.condition?.text || "Rainy"}
+        </p>
+        <div className="text-[clamp(36px,8vw,48px)] font-semibold text-text-primary leading-none">
           <span>{displayData?.temp_c || "19"}</span>
           <span className="text-[0.4em] align-super font-medium">°C</span>
         </div>
-        <p className="text-[clamp(14px,2.5vw,18px)] text-text-secondary font-medium m-0">
-          {displayData?.condition?.text || "Rainy"}
-        </p>
       </div>
+      <img
+        src={iconSrc}
+        alt="Weather Icon"
+        className="w-[120px] h-full"
+        style={{ filter: "drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2))" }}
+      />
     </div>
   );
 };

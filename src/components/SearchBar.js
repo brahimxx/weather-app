@@ -58,14 +58,14 @@ const SearchBar = ({ onClick }) => {
       <form
         className="flex items-center h-12 rounded-[50px] p-1.5 z-[2] transition-all duration-500 ease-in-out md:hover:shadow-md md:focus-within:shadow-md"
         style={{
-          background: "rgba(255, 255, 255, 0.3)",
+          background: "var(--bg-glass)",
           backdropFilter: "blur(10px)",
           border: "1px solid rgba(255, 255, 255, 0.3)",
-          boxShadow: "rgba(0, 0, 0, 0.08) 0px 4px 12px",
+          boxShadow: "var(--shadow-sm)",
         }}
       >
         <input
-          className="border-none bg-transparent outline-none p-0 text-text-primary text-[15px] font-medium transition-all duration-500 ease-in-out h-full w-0 focus:w-[200px] focus:px-2 md:hover:w-[220px] placeholder:text-[rgba(26,26,46,0.5)] max-[480px]:text-sm"
+          className="border-none bg-transparent outline-none p-0 text-text-primary text-[15px] font-medium transition-all duration-500 ease-in-out h-full w-0 focus:w-[200px] focus:px-2 md:hover:w-[220px] placeholder:text-text-secondary/50 max-[480px]:text-sm"
           type="text"
           placeholder="Enter city"
           value={searchQuery}
@@ -84,18 +84,18 @@ const SearchBar = ({ onClick }) => {
           type="button"
           className="flex justify-center items-center w-9 h-9 min-w-[36px] rounded-full border-none cursor-pointer transition-all duration-300 text-sm p-0 hover:scale-[1.02] focus:outline-2 focus:outline-accent-start focus:outline-offset-2"
           style={{
-            background: "rgba(255, 255, 255, 0.5)",
-            color: "#0f172a",
-            boxShadow: "rgba(0, 0, 0, 0.08) 0px 2px 6px",
+            background: "var(--bg-selected)",
+            color: "var(--text-primary)",
+            boxShadow: "var(--shadow-sm)",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background =
-              "linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%)";
+              "linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%)";
             e.currentTarget.style.color = "white";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(255, 255, 255, 0.5)";
-            e.currentTarget.style.color = "#0f172a";
+            e.currentTarget.style.background = "var(--bg-selected)";
+            e.currentTarget.style.color = "var(--text-primary)";
           }}
           onClick={() => {
             handleFormSubmit();
@@ -115,7 +115,7 @@ const SearchBar = ({ onClick }) => {
             backdropFilter: "blur(20px)",
             border: "1px solid rgba(255, 255, 255, 0.3)",
             borderRadius: "0 0 20px 20px",
-            boxShadow: "rgba(0, 0, 0, 0.15) 0px 12px 32px",
+            boxShadow: "var(--shadow-lg)",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
           }}

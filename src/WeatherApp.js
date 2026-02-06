@@ -76,7 +76,7 @@ function WeatherApp() {
   }
 
   return (
-    <div className="flex flex-col justify-between p-2 h-full overflow-hidden md:p-5 md:h-[90vh] lg:p-8">
+    <div className="flex flex-col justify-between p-2 h-full overflow-hidden md:p-5 md:h-[90vh] lg:p-8 ">
       <Header onClick={handleClick} />
       <WeatherTitle weatherInfo={weatherInfo} />
       <TheWeather

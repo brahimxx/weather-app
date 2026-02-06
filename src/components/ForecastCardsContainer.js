@@ -58,43 +58,56 @@ function ForecastCardsContainer({ city, onHourSelect }) {
     " [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [scroll-snap-type:x_mandatory]";
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="h-[200px] flex flex-col gap-2">
       <Box
         sx={{
-          bgcolor: "rgba(255, 255, 255, 0.25)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          borderRadius: "12px",
-          padding: { xs: "3px", sm: "4px" },
-          boxShadow: "rgba(0, 0, 0, 0.08) 0px 5px 15px",
-          "& .MuiTabs-indicator": {
-            height: "100%",
-            background: "rgba(255, 255, 255, 0.45)",
-            border: "1px solid rgba(255, 255, 255, 0.3)",
-            borderRadius: "8px",
-            boxShadow: "rgba(0, 0, 0, 0.08) 0px 4px 12px",
-            zIndex: 0,
-            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+          "& .MuiButtonBase-root .MuiTouchRipple-root": {
+            display: "none",
+            backgroundColor: "transparent",
           },
-          "& .MuiTabs-flexContainer": {
-            position: "relative",
-            zIndex: 1,
+          "& .MuiTabs-indicator": {
+            display: "flex",
+            justifyContent: "center",
+            height: "6px",
+            bottom: "4px",
+            backgroundColor: "transparent",
+            transition: "all 0.3s ease-out",
+            "&::before": {
+              content: '""',
+              width: "6px",
+              height: "6px",
+              borderRadius: "50%",
+              background: "var(--text-secondary)",
+              color: "var(--text-primary)",
+            },
           },
           "& .MuiTab-root": {
-            color: "#1e293b",
+            color: "var(--text-primary)",
             fontWeight: 500,
             fontFamily: "'Poppins', sans-serif",
             textTransform: "none",
             fontSize: { xs: "11px", sm: "12px", md: "13px" },
             padding: { xs: "6px 12px", sm: "8px 16px" },
-            borderRadius: "8px",
-            transition: "color 0.3s ease-in-out",
-            zIndex: 1,
+            transform: "translateY(0) scale(1)",
+            backgroundColor: "transparent",
+            transition:
+              "color 0.18s ease-in-out, transform 0.18s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.18s",
+            cursor: "pointer",
+            "&:hover": {
+              color: "var(--text-primary)",
+            },
+            "&:active": {
+              transform: "translateY(1px) scale(0.98)",
+            },
             "&.Mui-selected": {
               fontWeight: 600,
+              color: "var(--text-primary)",
+              transform: "translateY(-6px) scale(1.02)",
+              boxShadow: "0 8px 20px rgba(2,6,23,0.06)",
+              backgroundColor: "transparent",
             },
-            "&:hover:not(.Mui-selected)": {
-              background: "rgba(6, 182, 212, 0.1)",
+            "&.Mui-selected, &:active, &:focus": {
+              backgroundColor: "transparent",
             },
           },
         }}
@@ -103,11 +116,26 @@ function ForecastCardsContainer({ city, onHourSelect }) {
           value={value}
           onChange={handleChange}
           centered
-          aria-label="weather forecast tabs"
+          aria-label="weather forecast tabs "
         >
-          <Tab label="Today" />
-          <Tab label="Tomorrow" />
-          <Tab label="3 Days" />
+          <Tab
+            label="Today"
+            disableRipple
+            disableFocusRipple
+            disableTouchRipple
+          />
+          <Tab
+            label="Tomorrow"
+            disableRipple
+            disableFocusRipple
+            disableTouchRipple
+          />
+          <Tab
+            label="3 Days"
+            disableRipple
+            disableFocusRipple
+            disableTouchRipple
+          />
         </Tabs>
         {value === 0 && (
           <div className={containerClass}>

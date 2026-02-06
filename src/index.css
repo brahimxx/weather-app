@@ -25,7 +25,7 @@
 
   [data-theme="dark"] {
     /* Dark theme */
-    --bg-primary: #0f172a;
+    --bg-primary: #000000;
     --bg-secondary: #1e293b;
     --bg-overlay: rgba(15, 23, 42, 0.9);
     --bg-glass: rgba(255, 255, 255, 0.05);
@@ -108,9 +108,8 @@
   #root {
     max-width: 800px;
     margin: 1.25rem auto;
-    border-radius: 1.5rem;
+    border-radius: 30px;
     background: var(--bg-glass);
-    box-shadow: var(--shadow-lg);
     backdrop-filter: blur(10px);
   }
 }
