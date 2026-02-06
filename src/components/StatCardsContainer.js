@@ -1,6 +1,8 @@
-import rainIcon from "../assets/animated_weather/raindrops.svg";
-import windIcon from "../assets/animated_weather/wind.svg";
-import humidityIcon from "../assets/animated_weather/humidity.svg";
+const ICON_BASE_URL = process.env.REACT_APP_WEATHER_ICON_BASE_URL;
+
+const rainIcon = `${ICON_BASE_URL}raindrop.svg`;
+const windIcon = `${ICON_BASE_URL}wind.svg`;
+const humidityIcon = `${ICON_BASE_URL}humidity.svg`;
 
 const StatCard = ({ icon, label, value }) => {
   return (

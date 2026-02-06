@@ -1,8 +1,6 @@
-import React from "react";
 import Searchbar from "./SearchBar";
 import UserLocation from "./UserLocation";
 import ThemeToggle from "./ThemeToggle";
-import menuIcon from "../assets/icons/menu.svg";
 
 const Header = ({ onClick }) => {
   return (
@@ -30,12 +28,6 @@ const Header = ({ onClick }) => {
         >
           <UserLocation onClick={onClick} />
         </div>
-        <img
-          src={menuIcon}
-          className="w-7 h-7 cursor-pointer transition-transform duration-300 opacity-80 hover:scale-110 hover:opacity-100 md:w-[30px] md:h-[30px] max-[480px]:w-6 max-[480px]:h-6"
-          style={{ filter: "var(--text-primary)" }}
-          alt="Menu"
-        />
       </div>
     </div>
   );

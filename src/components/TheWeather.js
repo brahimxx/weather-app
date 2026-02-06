@@ -1,77 +1,55 @@
-import React from "react";
-import Weathericon from "../assets/icons/cludy.png";
+const ICON_BASE_URL = process.env.REACT_APP_WEATHER_ICON_BASE_URL;
 
 const conditionCodeToIcon = {
-  1000: { day: "clear-day.svg", night: "clear-night.svg" },
-  1003: { day: "cloudy-1-day.svg", night: "cloudy-1-night.svg" },
-  1006: { day: "cloudy-2-day.svg", night: "cloudy-2-night.svg" },
-  1009: { day: "cloudy-3-day.svg", night: "cloudy-3-night.svg" },
-  1030: { day: "fog-day.svg", night: "fog-night.svg" },
-  1063: { day: "rainy-1-day.svg", night: "rainy-1-night.svg" },
-  1066: { day: "snowy-1-day.svg", night: "snowy-1-night.svg" },
-  1069: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
-  1072: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
-  1087: {
-    day: "isolated-thunderstorms-day.svg",
-    night: "isolated-thunderstorms-night.svg",
-  },
-  1114: { day: "snowy-3-day.svg", night: "snowy-3-night.svg" },
-  1117: { day: "snowy-3-day.svg", night: "snowy-3-night.svg" },
-  1135: { day: "fog.svg", night: "fog.svg" },
-  1147: { day: "frost.svg", night: "frost.svg" },
-  1150: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
-  1153: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
-  1168: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
-  1171: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
-  1180: { day: "rainy-1-day.svg", night: "rainy-1-night.svg" },
-  1183: { day: "rainy-1.svg", night: "rainy-1.svg" },
-  1186: { day: "rainy-2-day.svg", night: "rainy-2-night.svg" },
-  1189: { day: "rainy-2.svg", night: "rainy-2.svg" },
-  1192: { day: "rainy-3-day.svg", night: "rainy-3-night.svg" },
-  1195: { day: "rainy-3.svg", night: "rainy-3.svg" },
-  1198: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
-  1201: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
-  1204: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
-  1207: { day: "rain-and-sleet-mix.svg", night: "rain-and-sleet-mix.svg" },
-  1210: { day: "snowy-1-day.svg", night: "snowy-1-night.svg" },
-  1213: { day: "snowy-1.svg", night: "snowy-1.svg" },
-  1216: { day: "snowy-2-day.svg", night: "snowy-2-night.svg" },
-  1219: { day: "snowy-2.svg", night: "snowy-2.svg" },
-  1222: { day: "snowy-3-day.svg", night: "snowy-3-night.svg" },
-  1225: { day: "snowy-3.svg", night: "snowy-3.svg" },
-  1237: { day: "hail.svg", night: "hail.svg" },
-  1240: { day: "rainy-1-day.svg", night: "rainy-1-night.svg" },
-  1243: { day: "rainy-3-day.svg", night: "rainy-3-night.svg" },
-  1246: { day: "rainy-3-day.svg", night: "rainy-3-night.svg" },
-  1249: { day: "rain-and-snow-mix.svg", night: "rain-and-snow-mix.svg" },
-  1252: { day: "rain-and-snow-mix.svg", night: "rain-and-snow-mix.svg" },
-  1255: { day: "snowy-1-day.svg", night: "snowy-1-night.svg" },
-  1258: { day: "snowy-2-day.svg", night: "snowy-2-night.svg" },
-  1261: { day: "hail.svg", night: "hail.svg" },
-  1264: { day: "hail.svg", night: "hail.svg" },
-  1273: {
-    day: "scattered-thunderstorms-day.svg",
-    night: "scattered-thunderstorms-night.svg",
-  },
-  1276: { day: "thunderstorms.svg", night: "thunderstorms.svg" },
-  1279: {
-    day: "scattered-thunderstorms-day.svg",
-    night: "scattered-thunderstorms-night.svg",
-  },
-  1282: { day: "snowy-3.svg", night: "snowy-3.svg" },
+  1000: { day: "clear-day", night: "clear-night" },
+  1003: { day: "partly-cloudy-day", night: "partly-cloudy-night" },
+  1006: { day: "cloudy", night: "cloudy" },
+  1009: { day: "overcast", night: "overcast" },
+  1030: { day: "fog-day", night: "fog-night" },
+  1063: { day: "partly-cloudy-day-rain", night: "partly-cloudy-night-rain" },
+  1066: { day: "partly-cloudy-day-snow", night: "partly-cloudy-night-snow" },
+  1069: { day: "sleet", night: "sleet" },
+  1072: { day: "sleet", night: "sleet" },
+  1087: { day: "thunderstorms-day", night: "thunderstorms-night" },
+  1114: { day: "snow", night: "snow" },
+  1117: { day: "snow", night: "snow" },
+  1135: { day: "fog", night: "fog" },
+  1147: { day: "fog", night: "fog" },
+  1150: { day: "drizzle", night: "drizzle" },
+  1153: { day: "drizzle", night: "drizzle" },
+  1168: { day: "sleet", night: "sleet" },
+  1171: { day: "sleet", night: "sleet" },
+  1180: { day: "partly-cloudy-day-rain", night: "partly-cloudy-night-rain" },
+  1183: { day: "rain", night: "rain" },
+  1186: { day: "partly-cloudy-day-rain", night: "partly-cloudy-night-rain" },
+  1189: { day: "rain", night: "rain" },
+  1192: { day: "rain", night: "rain" },
+  1195: { day: "rain", night: "rain" },
+  1198: { day: "sleet", night: "sleet" },
+  1201: { day: "sleet", night: "sleet" },
+  1204: { day: "sleet", night: "sleet" },
+  1207: { day: "sleet", night: "sleet" },
+  1210: { day: "partly-cloudy-day-snow", night: "partly-cloudy-night-snow" },
+  1213: { day: "snow", night: "snow" },
+  1216: { day: "partly-cloudy-day-snow", night: "partly-cloudy-night-snow" },
+  1219: { day: "snow", night: "snow" },
+  1222: { day: "snow", night: "snow" },
+  1225: { day: "snow", night: "snow" },
+  1237: { day: "hail", night: "hail" },
+  1240: { day: "partly-cloudy-day-rain", night: "partly-cloudy-night-rain" },
+  1243: { day: "rain", night: "rain" },
+  1246: { day: "rain", night: "rain" },
+  1249: { day: "sleet", night: "sleet" },
+  1252: { day: "sleet", night: "sleet" },
+  1255: { day: "partly-cloudy-day-snow", night: "partly-cloudy-night-snow" },
+  1258: { day: "snow", night: "snow" },
+  1261: { day: "hail", night: "hail" },
+  1264: { day: "hail", night: "hail" },
+  1273: { day: "thunderstorms-day-rain", night: "thunderstorms-night-rain" },
+  1276: { day: "thunderstorms-rain", night: "thunderstorms-rain" },
+  1279: { day: "thunderstorms-day-snow", night: "thunderstorms-night-snow" },
+  1282: { day: "thunderstorms-snow", night: "thunderstorms-snow" },
 };
-
-const importIcons = (requireContext) => {
-  let icons = {};
-  requireContext.keys().forEach((item) => {
-    icons[item.replace("./", "")] = requireContext(item);
-  });
-  return icons;
-};
-
-const icons = importIcons(
-  require.context("../assets/animated_weather", false, /\.(svg)$/),
-);
 
 const TheWeather = ({ weatherInfo, selectedHourData }) => {
   // Use selectedHourData if available, otherwise use current weather
@@ -79,12 +57,12 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
 
   const conditionCode = displayData?.condition?.code;
   const isDay = displayData?.is_day === 1;
-  const iconFileName = conditionCodeToIcon[conditionCode]
+  const iconName = conditionCodeToIcon[conditionCode]
     ? isDay
       ? conditionCodeToIcon[conditionCode].day
       : conditionCodeToIcon[conditionCode].night
-    : "clear-day.svg";
-  const iconSrc = icons[iconFileName] || Weathericon;
+    : "clear-day";
+  const iconSrc = `${ICON_BASE_URL}${iconName}.svg`;
 
   return (
     <div
@@ -106,7 +84,7 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
       <img
         src={iconSrc}
         alt="Weather Icon"
-        className="w-[120px] h-full"
+        className="w-[140px] h-full"
         style={{ filter: "drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2))" }}
       />
     </div>
