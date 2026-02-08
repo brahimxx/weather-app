@@ -55,6 +55,19 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
   // Use selectedHourData if available, otherwise use current weather
   const displayData = selectedHourData || weatherInfo?.current;
 
+  // Format date and time
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  };
+
+  const dateTimeString = displayData?.time || displayData?.last_updated;
+
   const conditionCode = displayData?.condition?.code;
   const isDay = displayData?.is_day === 1;
   const iconName = conditionCodeToIcon[conditionCode]
@@ -73,18 +86,21 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
       }}
     >
       <div className="flex flex-col  gap-1">
+        <p className="text-sm md:text-base font-semibold text-text-primary m-0">
+          {formatDateTime(dateTimeString)}
+        </p>
         <p className="text-[clamp(8px,2vw,14px)] text-text-secondary font-medium m-0">
           {displayData?.condition?.text || "Rainy"}
         </p>
         <div className="text-[clamp(36px,8vw,48px)] font-semibold text-text-primary leading-none">
-          <span>{displayData?.temp_c || "19"}</span>
+          <span>{Math.round(displayData?.temp_c || 19)}</span>
           <span className="text-[0.4em] align-super font-medium">°C</span>
         </div>
       </div>
       <img
         src={iconSrc}
         alt="Weather Icon"
-        className="w-[140px] h-full"
+        className="w-[150px] h-full"
         style={{ filter: "drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2))" }}
       />
     </div>

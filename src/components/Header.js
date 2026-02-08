@@ -9,7 +9,7 @@ const Header = ({ onClick }) => {
       <div className="flex items-center gap-2">
         <ThemeToggle />
         <div
-          className="flex justify-center items-center w-9 h-9 min-w-[36px] p-2 rounded-full cursor-pointer transition-all duration-300 hover:scale-105"
+          className="flex justify-center items-center w-9 h-9 min-w-[36px] p-2 rounded-full cursor-pointer transition-all duration-300 hover:scale-105 hover:brightness-110"
           style={{
             background: "var(--bg-glass)",
             backdropFilter: "blur(10px)",
@@ -17,12 +17,9 @@ const Header = ({ onClick }) => {
             boxShadow: "var(--shadow-sm)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background =
-              "linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%)";
-            e.currentTarget.style.boxShadow = "var(--shadow-accent)";
+            e.currentTarget.style.boxShadow = "var(--shadow-md)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = "var(--bg-glass)";
             e.currentTarget.style.boxShadow = "var(--shadow-sm)";
           }}
         >

@@ -4,7 +4,6 @@ import fetchData from "../services/api";
 const SearchBar = ({ onClick }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [isInputOpen, setIsInputOpen] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const inputRef = useRef(null);
 
@@ -39,98 +38,115 @@ const SearchBar = ({ onClick }) => {
   };
 
   const handleFormSubmit = (e) => {
-    inputRef.current.focus();
-    if (searchQuery !== "" && isInputFocused) {
-      onClick("^" + searchQuery + ".*");
-    } else if (suggestions.length && searchQuery === "") {
-      setSearchQuery(suggestions[0].name);
+    if (e) e.preventDefault();
+    if (searchQuery.trim() !== "") {
+      onClick(searchQuery.trim());
+      setSearchQuery("");
+      setSuggestions([]);
+      inputRef.current?.blur();
     }
   };
 
-  const handleSuggestionClick = (city) => {
-    setSearchQuery(city);
-    onClick("^" + city + ".*");
+  const handleSuggestionClick = (suggestion) => {
+    // WeatherAPI recommends using 'id' for accurate lookup
+    // Format: "id:<location_id>"
+    const searchParam = suggestion.id ? `id:${suggestion.id}` : suggestion.name;
+    onClick(searchParam);
+    setSearchQuery("");
     setSuggestions([]);
+    setIsInputFocused(false);
   };
 
+  const isExpanded = suggestions?.length > 0 && isInputFocused;
+
   return (
-    <div className="flex items-center gap-2 relative">
+    <div className="relative z-50">
+      {/* Background Shell for Expanded State */}
+      {isExpanded && (
+        <div
+          className="absolute top-0 left-0 w-full flex flex-col overflow-hidden rounded-[28px] animate-in fade-in zoom-in-95 duration-200"
+          style={{
+            background: "var(--bg-glass)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(255, 255, 255, 0.3)",
+            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+            zIndex: 10,
+          }}
+        >
+          {/* Spacer for Input Area */}
+          <div className="h-12 w-full shrink-0 border-b border-white/10" />
+
+          {/* Suggestions List */}
+          <ul className="list-none p-0 m-0 w-full py-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+            {suggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                onClick={() => handleSuggestionClick(suggestion)}
+                className="py-3 px-5 cursor-pointer flex items-center justify-between gap-3 transition-all duration-200 hover:bg-white/10"
+              >
+                <span
+                  className="font-semibold text-[15px]"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  {suggestion.name}
+                </span>
+                <span
+                  className="text-xs truncate max-w-[50%]"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  {suggestion.region && `${suggestion.region}, `}
+                  {suggestion.country}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Input Form */}
       <form
-        className="flex items-center h-12 rounded-[50px] p-1.5 z-[2] transition-all duration-500 ease-in-out md:hover:shadow-md md:focus-within:shadow-md"
+        className={`flex items-center h-12 p-1.5 transition-all duration-200 ${
+          isExpanded ? "" : "rounded-full"
+        }`}
         style={{
-          background: "var(--bg-glass)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(255, 255, 255, 0.3)",
-          boxShadow: "var(--shadow-sm)",
+          background: isExpanded ? "transparent" : "var(--bg-glass)",
+          backdropFilter: isExpanded ? "none" : "blur(10px)",
+          border: isExpanded
+            ? "1px solid transparent"
+            : "1px solid rgba(255, 255, 255, 0.3)",
+          boxShadow: isExpanded ? "none" : "var(--shadow-sm)",
+          position: "relative",
+          zIndex: 20,
         }}
+        onSubmit={handleFormSubmit}
       >
         <input
-          className="border-none bg-transparent outline-none p-0 text-text-primary text-[15px] font-medium transition-all duration-500 ease-in-out h-full w-0 focus:w-[200px] focus:px-2 md:hover:w-[220px] placeholder:text-text-secondary/50 max-[480px]:text-sm"
+          className="border-none bg-transparent outline-none px-3 text-text-primary text-[15px] font-medium h-full w-[180px] md:w-[220px] placeholder:text-text-secondary/50 max-[480px]:w-[140px] max-[480px]:text-sm"
           type="text"
-          placeholder="Enter city"
+          placeholder="Search city..."
           value={searchQuery}
           ref={inputRef}
           onChange={handleInputChange}
-          onFocus={() => {
-            setIsInputFocused(true);
-            setIsInputOpen(true);
-          }}
-          onBlur={() => {
-            setTimeout(() => setIsInputFocused(false), 200);
-            setIsInputOpen(false);
-          }}
         />
         <button
-          type="button"
-          className="flex justify-center items-center w-9 h-9 min-w-[36px] rounded-full border-none cursor-pointer transition-all duration-300 text-sm p-0 hover:scale-[1.02] focus:outline-2 focus:outline-accent-start focus:outline-offset-2"
+          type="submit"
+          className="flex justify-center items-center w-9 h-9 min-w-[36px] rounded-full border-none cursor-pointer transition-all duration-300 text-sm p-0 hover:scale-105 hover:brightness-110 focus:outline-2 focus:outline-accent-start focus:outline-offset-2"
           style={{
             background: "var(--bg-selected)",
             color: "var(--text-primary)",
             boxShadow: "var(--shadow-sm)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background =
-              "linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%)";
-            e.currentTarget.style.color = "white";
+            e.currentTarget.style.boxShadow = "var(--shadow-md)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = "var(--bg-selected)";
-            e.currentTarget.style.color = "var(--text-primary)";
-          }}
-          onClick={() => {
-            handleFormSubmit();
-            setIsInputOpen(!isInputOpen);
+            e.currentTarget.style.boxShadow = "var(--shadow-sm)";
           }}
           aria-label="Search"
         >
           <i className="fas fa-search"></i>
         </button>
       </form>
-
-      {suggestions?.length > 0 && isInputFocused && (
-        <ul
-          className="list-none p-0 m-0 absolute top-[52px] left-0 max-h-60 w-[280px] py-2 overflow-y-auto z-10 md:w-[300px] max-[480px]:w-[220px]"
-          style={{
-            background: "rgba(255, 255, 255, 0.95)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid rgba(255, 255, 255, 0.3)",
-            borderRadius: "0 0 20px 20px",
-            boxShadow: "var(--shadow-lg)",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          }}
-        >
-          {suggestions.map((suggestion, index) => (
-            <li
-              key={index}
-              onClick={() => handleSuggestionClick(suggestion.name)}
-              className="py-2 px-4 cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis rounded-xl mx-1 transition-all duration-200 font-medium text-sm hover:bg-gradient-to-br hover:from-accent-start hover:to-accent-end hover:text-white hover:translate-x-1"
-            >
-              {suggestion.name}, {suggestion.region}, {suggestion.country}
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 };

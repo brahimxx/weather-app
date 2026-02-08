@@ -1,8 +1,9 @@
-const ICON_BASE_URL = process.env.REACT_APP_WEATHER_ICON_BASE_URL;
+const ICON_BASE_URL = process.env.REACT_APP_WEATHER_ICON_OUTLINE_BASE_URL;
 
 const rainIcon = `${ICON_BASE_URL}raindrop.svg`;
 const windIcon = `${ICON_BASE_URL}wind.svg`;
 const humidityIcon = `${ICON_BASE_URL}humidity.svg`;
+const pressureIcon = `${ICON_BASE_URL}barometer.svg`;
 
 const StatCard = ({ icon, label, value }) => {
   return (
@@ -51,6 +52,11 @@ const StatCardsContainer = ({ weatherInfo, selectedHourData }) => {
         icon={windIcon}
         label="Wind"
         value={displayData?.wind_kph + " km/h"}
+      />
+      <StatCard
+        icon={pressureIcon}
+        label="Pressure"
+        value={displayData?.pressure_mb + " hPa"}
       />
     </div>
   );

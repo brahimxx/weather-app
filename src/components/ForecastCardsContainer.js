@@ -180,6 +180,8 @@ function ForecastCardsContainer({ city, onHourSelect }) {
                 index={index}
                 city={city}
                 is_week={value}
+                onHourSelect={(data) => handleHourClick(data, index)}
+                isSelected={selectedHour === index}
               />
             ))}
           </div>

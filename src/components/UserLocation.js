@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const LocationIcon = () => (
   <svg
@@ -25,33 +25,41 @@ const LocationIcon = () => (
 );
 
 function UserLocation({ onClick }) {
-  const [location, setLocation] = useState({
-    latitude: null,
-    longitude: null,
-  });
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude + "",
-            longitude: position.coords.longitude + "",
-          });
-        },
-        (err) => {
-          console.error("Geolocation error:", err.message);
-        },
-      );
-    } else {
+  const handleLocationClick = () => {
+    if (!navigator.geolocation) {
       console.error("Geolocation is not supported by your browser.");
+      return;
     }
-  }, []);
+
+    setIsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        onClick(`${lat},${lon}`);
+        setIsLoading(false);
+      },
+      (err) => {
+        console.error("Geolocation error:", err.message);
+        alert(
+          "Unable to get your location. Please enable location permissions.",
+        );
+        setIsLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      },
+    );
+  };
 
   return (
     <div
-      onClick={() => onClick(location.latitude + "," + location.longitude)}
-      className="w-full h-full flex items-center justify-center cursor-pointer"
+      onClick={handleLocationClick}
+      className={`w-full h-full flex items-center justify-center cursor-pointer ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
     >
       <LocationIcon />
     </div>

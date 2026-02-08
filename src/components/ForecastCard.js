@@ -80,8 +80,22 @@ function ForecastCard({
   const cardRef = useRef(null);
 
   const handleClick = () => {
-    if (onHourSelect && hourInfo && !is_week) {
-      onHourSelect(hourInfo);
+    if (onHourSelect) {
+      if (hourInfo && !is_week) {
+        onHourSelect(hourInfo);
+      } else if (daysInfo && is_week) {
+        onHourSelect({
+          ...daysInfo,
+          temp_c: daysInfo.day.avgtemp_c,
+          condition: daysInfo.day.condition,
+          is_day: 1,
+          time: daysInfo.date + " 12:00",
+          precip_mm: daysInfo.day.totalprecip_mm,
+          humidity: daysInfo.day.avghumidity,
+          wind_kph: daysInfo.day.maxwind_kph,
+          pressure_mb: daysInfo.hour?.[12]?.pressure_mb,
+        });
+      }
     }
   };
 
@@ -106,8 +120,6 @@ function ForecastCard({
   }, [isSelected]);
 
   let forecastTime;
-  const cardClassName =
-    "forecast-card-div" + (isSelected ? " selected-forecastcard" : "");
 
   const isCurrentHour = hour === index && is_today;
 
@@ -121,42 +133,21 @@ function ForecastCard({
     }
   }
 
-  const baseCardClass =
-    "min-w-[65px] min-h-[80px] max-h-[120px] flex flex-col justify-center items-center gap-1 rounded-2xl p-1 transition-all duration-300 cursor-pointer flex-shrink-0 scroll-snap-align-start hover:-translate-y-1 md:min-w-[70px] md:min-h-[90px] md:py-2 md:px-4 max-[480px]:min-w-14 max-[480px]:min-h-[75px] max-[480px]:p-1 max-[480px]:rounded-xl";
-  const isHighlighted = cardClassName.includes("selected");
-
   const isWeekView = is_week === 2;
   const topText = isWeekView
     ? new Date(daysInfo.date).toLocaleDateString("en-US", { weekday: "short" })
     : forecastTime;
   const tempValue = isWeekView ? daysInfo.day.maxtemp_c : hourInfo?.temp_c;
 
-  const cardStyle = {
-    background: isHighlighted ? "var(--bg-selected)" : "var(--bg-glass)",
-    backdropFilter: "blur(10px)",
-    border: isHighlighted ? "2px solid var(--bg-selected)" : "",
-    transform: isHighlighted ? "translateY(-2px)" : "none",
-  };
-
-  const handleMouseEnter = (e) => {
-    if (!isHighlighted) {
-      e.currentTarget.style.boxShadow = "var(--shadow-md)";
-      e.currentTarget.style.background = "var(--bg-glass-hover)";
-    }
-  };
-
-  const handleMouseLeave = (e) => {
-    if (!isHighlighted) {
-      e.currentTarget.style.boxShadow = "var(--shadow-sm)";
-      e.currentTarget.style.background = "var(--bg-glass)";
-    }
-  };
-
   const topSpanClass = `text-[11px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis max-w-full text-center md:text-[11px] max-[480px]:text-[10px] ${isSelected ? "text-accent-start font-bold" : "text-text-primary"}`;
 
   return (
     <div
-      className={baseCardClass}
+      className={`min-w-[65px] min-h-[80px] max-h-[120px] flex flex-col justify-center items-center gap-1 rounded-2xl p-1 transition-all duration-300 cursor-pointer flex-shrink-0 scroll-snap-align-start md:min-w-[70px] md:min-h-[90px] md:py-2 md:px-4 max-[480px]:min-w-14 max-[480px]:min-h-[75px] max-[480px]:p-1 max-[480px]:rounded-xl backdrop-blur-[10px] border-2 outline-none ${
+        isSelected
+          ? "bg-[var(--bg-selected)] border-[var(--bg-selected)] -translate-y-[2px]"
+          : "bg-[var(--bg-glass)] border-transparent hover:-translate-y-1 hover:bg-[var(--bg-glass-hover)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]"
+      }`}
       ref={(el) => {
         if (hour === index && is_today === 1) {
           targetDivRef.current = el;
@@ -164,9 +155,6 @@ function ForecastCard({
         cardRef.current = el;
       }}
       onClick={handleClick}
-      style={cardStyle}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <span className={topSpanClass}>{topText}</span>
       <img
@@ -177,7 +165,7 @@ function ForecastCard({
       />
       <div>
         <span className="text-[13px] font-bold text-text-primary md:text-sm max-[480px]:text-xs">
-          {tempValue}
+          {Math.round(tempValue || 19)}
         </span>
         <span className="text-[10px] align-super font-semibold text-text-secondary max-[480px]:text-[7px]">
           °C

@@ -42,16 +42,24 @@ function WeatherApp() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <h2>Loading weather data...</h2>
+      <div className="flex justify-center items-center h-screen">
+        <div className="relative">
+          <div
+            className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin"
+            style={{
+              borderColor:
+                "var(--accent-start) var(--accent-end) var(--accent-end) var(--accent-end)",
+            }}
+          ></div>
+          <div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 border-4 border-b-transparent rounded-full animate-spin"
+            style={{
+              borderColor:
+                "var(--accent-end) var(--accent-end) var(--accent-end) var(--accent-start)",
+              animationDirection: "reverse",
+              animationDuration: "0.8s",
+            }}
+          ></div>
         </div>
       </div>
     );
