@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import SearchBar from "../components/SearchBar";
 import { useWeather } from "../context/WeatherContext";
+import { useUserLocation } from "../context/LocationContext";
 import UserLocation from "../components/UserLocation";
+import { reverseGeocode } from "../services/locationService";
 
 // Fix for default marker icon in leaflet with webpack/react
 import icon from "leaflet/dist/images/marker-icon.png";
@@ -37,48 +39,88 @@ const LocationMarker = ({ position, setPosition, setLocationString }) => {
   return position === null ? null : <Marker position={position} />;
 };
 
+// Component to handle map centering when user location is available
+const MapCenterHandler = ({ userLat, userLon }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (userLat && userLon) {
+      map.setView([userLat, userLon], 13);
+    }
+  }, [userLat, userLon, map]);
+  
+  return null;
+};
+
 const LocationSelection = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { updateCity } = useWeather();
+  const { updateByCoordinates } = useWeather();
+  const { latitude, longitude, hasLocation, requestLocation } = useUserLocation();
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [markerPosition, setMarkerPosition] = useState(null);
 
+  // Set initial map position from route state or user location
   useEffect(() => {
     if (location.state?.lat && location.state?.lon) {
       const { lat, lon } = location.state;
-      setMarkerPosition({ lat, lon });
+      setMarkerPosition({ lat, lng: lon });
       setSelectedLocation(`${lat},${lon}`);
     }
   }, [location.state]);
 
-  const handleSearch = (query) => {
-    // If user searches text, we update city and go back
-    updateCity(query);
+  // Request user location on mount for distance-based sorting
+  useEffect(() => {
+    if (!hasLocation) {
+      requestLocation();
+    }
+  }, [hasLocation, requestLocation]);
+
+  const handleSearch = (query, locationName) => {
+    // Query is in format "lat,lon" from SearchBar
+    const [lat, lon] = query.split(",").map(Number);
+    if (!isNaN(lat) && !isNaN(lon)) {
+      updateByCoordinates(lat, lon, locationName);
+    } else {
+      // Fallback for text query (shouldn't happen with new system)
+      updateByCoordinates(null, null);
+    }
     navigate("/");
   };
 
-  const handleUserLocation = (coords) => {
-    updateCity(coords);
+  const handleUserLocation = (coords, locationInfo) => {
+    // coords is in format "lat,lon", locationInfo from Geoapify reverse geocode
+    const [lat, lon] = coords.split(",").map(Number);
+    updateByCoordinates(lat, lon, locationInfo);
     navigate("/");
   };
 
-  const handleMapSelection = () => {
-    if (selectedLocation) {
-      updateCity(selectedLocation);
+  const handleMapSelection = async () => {
+    if (markerPosition) {
+      const lat = markerPosition.lat;
+      const lon = markerPosition.lng || markerPosition.lon;
+      
+      // Get location name via reverse geocoding
+      const locationInfo = await reverseGeocode(lat, lon);
+      updateByCoordinates(lat, lon, locationInfo);
       navigate("/");
     }
   };
+
+  // Default center - use user location if available, otherwise Algiers
+  const defaultCenter = hasLocation 
+    ? [latitude, longitude] 
+    : [36.7538, 3.0588];
 
   return (
     <div className="h-screen w-full relative overflow-hidden bg-primary">
       {/* Full Screen Map Layer */}
       <div className="absolute inset-0 z-0">
         <MapContainer
-          center={[51.505, -0.09]}
+          center={defaultCenter}
           zoom={13}
           style={{ height: "100%", width: "100%", background: "#1a1a1a" }}
-          zoomControl={false} // We can add custom zoom control if needed, or rely on touch
+          zoomControl={false}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -89,14 +131,15 @@ const LocationSelection = () => {
             setPosition={setMarkerPosition}
             setLocationString={setSelectedLocation}
           />
+          {/* Center map when user location becomes available */}
+          <MapCenterHandler userLat={latitude} userLon={longitude} />
         </MapContainer>
       </div>
 
       {/* UI Overlay Layer - Header */}
       <div
-        className="absolute top-0 left-0 right-0 z-[2000] p-4 flex items-center justify-between shadow-sm"
+        className="absolute top-0 left-0 bg-red-300 right-0 z-[2000] p-4 flex items-center justify-between shadow-sm"
         style={{
-          background: "var(--bg-overlay)",
           backdropFilter: "blur(10px)",
         }}
       >

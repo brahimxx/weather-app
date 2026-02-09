@@ -1,3 +1,5 @@
+import { useUserLocation } from "../context/LocationContext";
+import { reverseGeocode } from "../services/locationService";
 import { useState } from "react";
 
 const LocationIcon = () => (
@@ -24,44 +26,68 @@ const LocationIcon = () => (
   </svg>
 );
 
+const LoadingSpinner = () => (
+  <div
+    className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin"
+    style={{
+      borderColor: "var(--text-primary) transparent var(--text-primary) var(--text-primary)",
+    }}
+  />
+);
+
 function UserLocation({ onClick }) {
+  const { requestLocation } = useUserLocation();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLocationClick = () => {
+  const handleLocationClick = async () => {
     if (!navigator.geolocation) {
       console.error("Geolocation is not supported by your browser.");
       return;
     }
 
     setIsLoading(true);
+
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
-        onClick(`${lat},${lon}`);
-        setIsLoading(false);
+
+        try {
+          // Use Geoapify reverse geocoding to get location name
+          const locationInfo = await reverseGeocode(lat, lon);
+          
+          // Pass coords and location info to parent
+          onClick(`${lat},${lon}`, locationInfo);
+        } catch (error) {
+          console.error("Reverse geocode error:", error);
+          // Still pass coords even if reverse geocode fails
+          onClick(`${lat},${lon}`, null);
+        } finally {
+          setIsLoading(false);
+        }
       },
       (err) => {
         console.error("Geolocation error:", err.message);
-        alert(
-          "Unable to get your location. Please enable location permissions.",
-        );
+        alert("Unable to get your location. Please enable location permissions.");
         setIsLoading(false);
       },
       {
         enableHighAccuracy: true,
-        timeout: 5000,
+        timeout: 10000,
         maximumAge: 0,
-      },
+      }
     );
   };
 
   return (
     <div
       onClick={handleLocationClick}
-      className={`w-full h-full flex items-center justify-center cursor-pointer ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
+      className={`w-full h-full flex items-center justify-center cursor-pointer transition-all duration-200 ${
+        isLoading ? "opacity-50 pointer-events-none" : "hover:scale-110"
+      }`}
+      title="Use my current location"
     >
-      <LocationIcon />
+      {isLoading ? <LoadingSpinner /> : <LocationIcon />}
     </div>
   );
 }

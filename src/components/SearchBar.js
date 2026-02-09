@@ -1,37 +1,52 @@
 import { useState, useEffect, useRef } from "react";
-import fetchData from "../services/api";
+import { searchLocations } from "../services/locationService";
+import { useUserLocation } from "../context/LocationContext";
 
 const SearchBar = ({ onClick }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef(null);
+  const debounceRef = useRef(null);
+
+  // Get user location for distance-based sorting
+  const { latitude, longitude, hasLocation } = useUserLocation();
 
   useEffect(() => {
-    const getAutoComplete = async () => {
-      if (searchQuery.length > 2) {
+    // Debounce search requests
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    if (searchQuery.length > 2) {
+      setIsLoading(true);
+      debounceRef.current = setTimeout(async () => {
         try {
-          const data = await fetchData("search", searchQuery);
-          if (Array.isArray(data)) {
-            setSuggestions(data);
-          } else {
-            setSuggestions([]);
-          }
+          const results = await searchLocations(
+            searchQuery,
+            hasLocation ? latitude : null,
+            hasLocation ? longitude : null
+          );
+          setSuggestions(results);
         } catch (error) {
           console.error("Search error:", error);
           setSuggestions([]);
+        } finally {
+          setIsLoading(false);
         }
-      } else {
-        setSuggestions([]);
-      }
-    };
-
-    if (searchQuery.length > 2) {
-      getAutoComplete();
+      }, 300);
     } else {
       setSuggestions([]);
+      setIsLoading(false);
     }
-  }, [searchQuery]);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [searchQuery, latitude, longitude, hasLocation]);
 
   const handleInputChange = (e) => {
     setSearchQuery(e.target.value);
@@ -48,10 +63,13 @@ const SearchBar = ({ onClick }) => {
   };
 
   const handleSuggestionClick = (suggestion) => {
-    // WeatherAPI recommends using 'id' for accurate lookup
-    // Format: "id:<location_id>"
-    const searchParam = suggestion.id ? `id:${suggestion.id}` : suggestion.name;
-    onClick(searchParam);
+    // Pass coordinates and full Geoapify location info
+    const locationInfo = {
+      name: suggestion.name,
+      region: suggestion.region,
+      country: suggestion.country,
+    };
+    onClick(`${suggestion.lat},${suggestion.lon}`, locationInfo);
     setSearchQuery("");
     setSuggestions([]);
     setIsInputFocused(false);
@@ -79,23 +97,43 @@ const SearchBar = ({ onClick }) => {
           <ul className="list-none p-0 m-0 w-full py-2 max-h-[300px] overflow-y-auto custom-scrollbar">
             {suggestions.map((suggestion, index) => (
               <li
-                key={index}
+                key={suggestion.id || index}
                 onClick={() => handleSuggestionClick(suggestion)}
                 className="py-3 px-5 cursor-pointer flex items-center justify-between gap-3 transition-all duration-200 hover:bg-white/10"
               >
-                <span
-                  className="font-semibold text-[15px]"
-                  style={{ color: "var(--text-primary)" }}
-                >
-                  {suggestion.name}
-                </span>
-                <span
-                  className="text-xs truncate max-w-[50%]"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  {suggestion.region && `${suggestion.region}, `}
-                  {suggestion.country}
-                </span>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span
+                    className="font-semibold text-[15px] truncate"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    {suggestion.name}
+                  </span>
+                  <span
+                    className="text-xs truncate"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    {suggestion.region && `${suggestion.region}, `}
+                    {suggestion.country}
+                  </span>
+                </div>
+                
+                {/* Distance Badge */}
+                {suggestion.distanceFormatted && (
+                  <span
+                    className="shrink-0 px-2 py-1 rounded-full text-xs font-medium"
+                    style={{
+                      background: suggestion.distance < 10 
+                        ? "var(--accent-start)" 
+                        : "var(--bg-glass)",
+                      color: suggestion.distance < 10 
+                        ? "white" 
+                        : "var(--text-secondary)",
+                    }}
+                  >
+                    {suggestion.distance < 10 ? "📍 " : ""}
+                    {suggestion.distanceFormatted}
+                  </span>
+                )}
               </li>
             ))}
           </ul>
@@ -117,7 +155,7 @@ const SearchBar = ({ onClick }) => {
         <input
           className="border-none bg-transparent outline-none px-3 text-text-primary text-[15px] font-medium h-full w-[90px] md:w-[110px] placeholder:text-text-secondary/50 max-[480px]:w-[70px] max-[480px]:text-sm transition-all duration-300 focus:w-[260px] md:focus:w-[320px]"
           type="text"
-          placeholder="Search..."
+          placeholder="Search location..."
           value={searchQuery}
           ref={inputRef}
           onChange={handleInputChange}
@@ -143,7 +181,12 @@ const SearchBar = ({ onClick }) => {
           }}
           aria-label="Search"
         >
-          <i className="fas fa-search"></i>
+          {isLoading ? (
+            <div className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin" 
+                 style={{ borderColor: "var(--text-primary) transparent transparent transparent" }} />
+          ) : (
+            <i className="fas fa-search"></i>
+          )}
         </button>
       </form>
     </div>
