@@ -59,6 +59,22 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
   const formatDateTime = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
+    const now = new Date();
+
+    const isToday =
+      date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear();
+
+    const timeStr = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+
+    if (isToday) {
+      return `Today, ${timeStr}`;
+    }
+
     return date.toLocaleDateString("en-US", {
       weekday: "long",
       hour: "numeric",
@@ -79,7 +95,7 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
 
   return (
     <div
-      className="min-h-[170px] flex flex-row justify-between items-center text-text-primary rounded-[30px] p-2 px-4 md:p-4 md:px-6 max-[480px]:p-2"
+      className="min-h-[150px] flex flex-row justify-between items-center text-text-primary rounded-[30px] p-2 px-4 md:p-2 md:px-6 max-[480px]:p-2"
       style={{
         background: "var(--bg-glass)",
         backdropFilter: "blur(10px)",

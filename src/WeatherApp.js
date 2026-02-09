@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import fetchData from "./services/api";
 import Header from "./components/Header";
-import WeatherTitle from "./components/WeatherTitle";
 import TheWeather from "./components/TheWeather";
 import StatCardsContainer from "./components/StatCardsContainer";
 import ForecastCardsContainer from "./components/ForecastCardsContainer";
+import { useWeather } from "./context/WeatherContext";
 
 function WeatherApp() {
-  const [city, setCity] = useState("Algiers");
+  const { city, updateCity } = useWeather();
+  const navigate = useNavigate();
   const [weatherInfo, setWeatherInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,14 +32,21 @@ function WeatherApp() {
     getWeather();
   }, [city]);
 
-  const handleClick = (newCity) => {
-    console.log(newCity);
-    setCity(newCity); // Update the city state
-    setSelectedHourData(null); // Reset selected hour when city changes
-  };
-
   const handleHourSelect = (hourData) => {
     setSelectedHourData(hourData);
+  };
+
+  const handleLocationClick = () => {
+    if (weatherInfo && weatherInfo.location) {
+      navigate("/location", {
+        state: {
+          lat: weatherInfo.location.lat,
+          lon: weatherInfo.location.lon,
+        },
+      });
+    } else {
+      navigate("/location");
+    }
   };
 
   if (loading) {
@@ -77,16 +86,25 @@ function WeatherApp() {
       >
         <div style={{ textAlign: "center" }}>
           <h2 style={{ color: "red" }}>{error}</h2>
-          <button onClick={() => setCity("Algiers")}>Try Again</button>
+          <button
+            className="mt-4 px-4 py-2 bg-accent-start text-white rounded-lg"
+            onClick={() => updateCity("Algiers")}
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col justify-between p-2 h-full overflow-hidden md:p-5 md:h-[90vh] lg:p-8 ">
-      <Header onClick={handleClick} />
-      <WeatherTitle weatherInfo={weatherInfo} />
+    <div className="flex flex-col justify-between p-2 h-full overflow-hidden md:p-5 md:h-[90vh] lg:p-8 relative">
+      <Header
+        onClick={updateCity}
+        weatherInfo={weatherInfo}
+        onLocationClick={handleLocationClick}
+      />
+
       <TheWeather
         weatherInfo={weatherInfo}
         selectedHourData={selectedHourData}

@@ -66,10 +66,9 @@ const SearchBar = ({ onClick }) => {
         <div
           className="absolute top-0 left-0 w-full flex flex-col overflow-hidden rounded-[28px] animate-in fade-in zoom-in-95 duration-200"
           style={{
-            background: "var(--bg-glass)",
-            backdropFilter: "blur(16px)",
-            border: "1px solid rgba(255, 255, 255, 0.3)",
-            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+            background: "var(--bg-secondary)",
+            border: "1px solid var(--border-primary)",
+            boxShadow: "var(--shadow-md)",
             zIndex: 10,
           }}
         >
@@ -105,28 +104,28 @@ const SearchBar = ({ onClick }) => {
 
       {/* Input Form */}
       <form
-        className={`flex items-center h-12 p-1.5 transition-all duration-200 ${
-          isExpanded ? "" : "rounded-full"
-        }`}
+        className={`flex items-center h-12 p-1.5 transition-all duration-200 rounded-full`}
         style={{
-          background: isExpanded ? "transparent" : "var(--bg-glass)",
-          backdropFilter: isExpanded ? "none" : "blur(10px)",
-          border: isExpanded
-            ? "1px solid transparent"
-            : "1px solid rgba(255, 255, 255, 0.3)",
-          boxShadow: isExpanded ? "none" : "var(--shadow-sm)",
+          background: "var(--bg-secondary)",
+          border: isExpanded ? "1px solid transparent" : "1px solid var(--border-primary)",
+          boxShadow: "var(--shadow-md)",
           position: "relative",
           zIndex: 20,
         }}
         onSubmit={handleFormSubmit}
       >
         <input
-          className="border-none bg-transparent outline-none px-3 text-text-primary text-[15px] font-medium h-full w-[180px] md:w-[220px] placeholder:text-text-secondary/50 max-[480px]:w-[140px] max-[480px]:text-sm"
+          className="border-none bg-transparent outline-none px-3 text-text-primary text-[15px] font-medium h-full w-[90px] md:w-[110px] placeholder:text-text-secondary/50 max-[480px]:w-[70px] max-[480px]:text-sm transition-all duration-300 focus:w-[260px] md:focus:w-[320px]"
           type="text"
-          placeholder="Search city..."
+          placeholder="Search..."
           value={searchQuery}
           ref={inputRef}
           onChange={handleInputChange}
+          onFocus={() => setIsInputFocused(true)}
+          onBlur={() => {
+            // Delay hide to allow click on suggestion
+            setTimeout(() => setIsInputFocused(false), 200);
+          }}
         />
         <button
           type="submit"
