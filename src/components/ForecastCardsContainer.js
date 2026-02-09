@@ -1,18 +1,23 @@
 import { useState, useEffect } from "react";
-import fetchData from "../services/api";
 import ForecastCard from "./ForecastCard";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 
-function ForecastCardsContainer({ city, onHourSelect }) {
-  const [forecastInfo, setForecastInfo] = useState(null);
-  const [value, setValue] = useState(0);
-  const [selectedHour, setSelectedHour] = useState(null);
+function ForecastCardsContainer({
+  city,
+  onHourSelect,
+  forecastInfo,
+  activeTab,
+  onTabChange,
+  selectedCardIndex,
+}) {  
+  // Remove local selectedHour state
+  // const [selectedHour, setSelectedHour] = useState(null);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
-    setSelectedHour(null); // Reset selection when changing tabs
+    onTabChange(newValue);
+    // setSelectedHour(null); // Reset managed by parent now
 
     // When switching to Today tab, auto-select current hour
     if (newValue === 0 && forecastInfo) {
@@ -21,37 +26,31 @@ function ForecastCardsContainer({ city, onHourSelect }) {
         forecastInfo?.forecast?.forecastday?.[0]?.hour?.[currentHour];
       if (currentHourData && onHourSelect) {
         setTimeout(() => {
-          setSelectedHour(currentHour);
-          onHourSelect(currentHourData);
+          onHourSelect(currentHourData, currentHour); // Pass index
         }, 100);
       }
     }
   };
 
   const handleHourClick = (hourData, hourIndex) => {
-    setSelectedHour(hourIndex);
+    // setSelectedHour(hourIndex); // Managed by parent
     if (onHourSelect) {
-      onHourSelect(hourData);
+      onHourSelect(hourData, hourIndex);
     }
   };
 
   useEffect(() => {
-    const getForecast = async () => {
-      const data = await fetchData("forecast", city);
-      setForecastInfo(data);
-
-      // Auto-select current hour on Today tab when city changes
+    // Auto-select current hour on Today tab when city changes
+    if (forecastInfo && activeTab === 0) {
       const currentHour = new Date().getHours();
       const currentHourData =
-        data?.forecast?.forecastday?.[0]?.hour?.[currentHour];
+        forecastInfo?.forecast?.forecastday?.[0]?.hour?.[currentHour];
       if (currentHourData && onHourSelect) {
-        setSelectedHour(currentHour);
-        onHourSelect(currentHourData);
+        onHourSelect(currentHourData, currentHour);
       }
-    };
-    getForecast();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [city]);
+  }, [city, forecastInfo]);
 
   const containerClass =
     "flex flex-row gap-1 w-full overflow-x-auto overflow-y-hidden m-0 py-1 px-4 min-h-0 md:gap-2 md:py-1 md:px-4 max-[480px]:gap-1 max-[480px]:p-1 max-[480px]:px-2" +
@@ -113,7 +112,7 @@ function ForecastCardsContainer({ city, onHourSelect }) {
         }}
       >
         <Tabs
-          value={value}
+          value={activeTab}
           onChange={handleChange}
           centered
           aria-label="weather forecast tabs "
@@ -137,7 +136,7 @@ function ForecastCardsContainer({ city, onHourSelect }) {
             disableTouchRipple
           />
         </Tabs>
-        {value === 0 && (
+        {activeTab === 0 && (
           <div className={containerClass}>
             {forecastInfo?.forecast.forecastday[0].hour.map(
               (hourInfo, index) => (
@@ -148,14 +147,14 @@ function ForecastCardsContainer({ city, onHourSelect }) {
                   city={city}
                   is_today={1}
                   onHourSelect={(data) => handleHourClick(data, index)}
-                  isSelected={selectedHour === index}
+                  isSelected={selectedCardIndex === index}
                 />
               ),
             )}
           </div>
         )}
 
-        {value === 1 && (
+        {activeTab === 1 && (
           <div className={containerClass}>
             {forecastInfo?.forecast.forecastday[1].hour.map(
               (hourInfo, index) => (
@@ -165,13 +164,13 @@ function ForecastCardsContainer({ city, onHourSelect }) {
                   index={index}
                   city={city}
                   onHourSelect={(data) => handleHourClick(data, index)}
-                  isSelected={selectedHour === index}
+                  isSelected={selectedCardIndex === index}
                 />
               ),
             )}
           </div>
         )}
-        {value === 2 && (
+        {activeTab === 2 && (
           <div className={containerClass}>
             {forecastInfo?.forecast.forecastday.map((daysInfo, index) => (
               <ForecastCard
@@ -179,9 +178,9 @@ function ForecastCardsContainer({ city, onHourSelect }) {
                 daysInfo={daysInfo}
                 index={index}
                 city={city}
-                is_week={value}
+                is_week={activeTab}
                 onHourSelect={(data) => handleHourClick(data, index)}
-                isSelected={selectedHour === index}
+                isSelected={selectedCardIndex === index}
               />
             ))}
           </div>

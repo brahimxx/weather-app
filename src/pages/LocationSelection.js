@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import SearchBar from "../components/SearchBar";
 import { useWeather } from "../context/WeatherContext";
-import { useUserLocation } from "../context/LocationContext";
 import UserLocation from "../components/UserLocation";
-import { reverseGeocode } from "../services/locationService";
 
 // Fix for default marker icon in leaflet with webpack/react
 import icon from "leaflet/dist/images/marker-icon.png";
@@ -39,88 +37,51 @@ const LocationMarker = ({ position, setPosition, setLocationString }) => {
   return position === null ? null : <Marker position={position} />;
 };
 
-// Component to handle map centering when user location is available
-const MapCenterHandler = ({ userLat, userLon }) => {
-  const map = useMap();
-  
-  useEffect(() => {
-    if (userLat && userLon) {
-      map.setView([userLat, userLon], 13);
-    }
-  }, [userLat, userLon, map]);
-  
-  return null;
-};
-
 const LocationSelection = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { updateByCoordinates } = useWeather();
-  const { latitude, longitude, hasLocation, requestLocation } = useUserLocation();
+  const { updateCity } = useWeather();
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [markerPosition, setMarkerPosition] = useState(null);
 
-  // Set initial map position from route state or user location
   useEffect(() => {
     if (location.state?.lat && location.state?.lon) {
       const { lat, lon } = location.state;
-      setMarkerPosition({ lat, lng: lon });
+      setMarkerPosition({ lat, lon });
       setSelectedLocation(`${lat},${lon}`);
     }
   }, [location.state]);
 
-  // Request user location on mount for distance-based sorting
-  useEffect(() => {
-    if (!hasLocation) {
-      requestLocation();
-    }
-  }, [hasLocation, requestLocation]);
-
-  const handleSearch = (query, locationName) => {
-    // Query is in format "lat,lon" from SearchBar
-    const [lat, lon] = query.split(",").map(Number);
-    if (!isNaN(lat) && !isNaN(lon)) {
-      updateByCoordinates(lat, lon, locationName);
-    } else {
-      // Fallback for text query (shouldn't happen with new system)
-      updateByCoordinates(null, null);
-    }
+  const handleSearch = (query) => {
+    // If user searches text, we update city and go back
+    updateCity(query);
     navigate("/");
   };
 
-  const handleUserLocation = (coords, locationInfo) => {
-    // coords is in format "lat,lon", locationInfo from Geoapify reverse geocode
-    const [lat, lon] = coords.split(",").map(Number);
-    updateByCoordinates(lat, lon, locationInfo);
+  const handleUserLocation = (coords) => {
+    updateCity(coords);
     navigate("/");
   };
 
-  const handleMapSelection = async () => {
-    if (markerPosition) {
-      const lat = markerPosition.lat;
-      const lon = markerPosition.lng || markerPosition.lon;
-      
-      // Get location name via reverse geocoding
-      const locationInfo = await reverseGeocode(lat, lon);
-      updateByCoordinates(lat, lon, locationInfo);
+  const handleMapSelection = () => {
+    if (selectedLocation) {
+      updateCity(selectedLocation);
       navigate("/");
     }
   };
 
-  // Default center - use user location if available, otherwise Algiers
-  const defaultCenter = hasLocation 
-    ? [latitude, longitude] 
-    : [36.7538, 3.0588];
-
   return (
-    <div className="h-screen w-full relative overflow-hidden bg-primary">
+    <div className="h-screen w-full relative overflow-hidden">
       {/* Full Screen Map Layer */}
       <div className="absolute inset-0 z-0">
         <MapContainer
-          center={defaultCenter}
+          center={[51.505, -0.09]}
           zoom={13}
-          style={{ height: "100%", width: "100%", background: "#1a1a1a" }}
-          zoomControl={false}
+          style={{
+            height: "100%",
+            width: "100%",
+          }}
+          zoomControl={false} // We can add custom zoom control if needed, or rely on touch
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -131,18 +92,11 @@ const LocationSelection = () => {
             setPosition={setMarkerPosition}
             setLocationString={setSelectedLocation}
           />
-          {/* Center map when user location becomes available */}
-          <MapCenterHandler userLat={latitude} userLon={longitude} />
         </MapContainer>
       </div>
 
       {/* UI Overlay Layer - Header */}
-      <div
-        className="absolute top-0 left-0 bg-red-300 right-0 z-[2000] p-4 flex items-center justify-between shadow-sm"
-        style={{
-          backdropFilter: "blur(10px)",
-        }}
-      >
+      <div className="bg-bg-secondary absolute top-0 left-0 right-0 z-[2000] p-4 flex items-center justify-between shadow-sm">
         <button
           onClick={() => navigate("/")}
           className="p-2 -ml-2 rounded-full text-text-primary hover:bg-black/5 dark:hover:bg-white/10 transition-all flex items-center gap-2 group"
@@ -187,13 +141,13 @@ const LocationSelection = () => {
       </div>
 
       {/* UI Overlay Layer - Bottom Actions */}
-      <div className="absolute bottom-24 left-0 right-0 flex flex-col items-center gap-4 z-[1000] pointer-events-none">
+      <div className="absolute bottom-5 left-0 right-0 flex flex-col items-center gap-4 z-[1000] pointer-events-none">
         {!selectedLocation && (
           <div className="bg-black/60 text-white px-6 py-3 rounded-full backdrop-blur-md text-sm font-medium animate-bounce shadow-lg">
             Tap anywhere on the map to pin
           </div>
         )}
-        
+
         <button
           onClick={handleMapSelection}
           disabled={!selectedLocation}
@@ -202,14 +156,26 @@ const LocationSelection = () => {
             px-8 py-4 rounded-full font-bold text-lg shadow-xl
             transition-all duration-300 transform
             flex items-center gap-2
-            ${selectedLocation 
-              ? 'translate-y-0 opacity-100 bg-accent-start text-white hover:bg-accent-end hover:scale-105 hover:shadow-2xl' 
-              : 'translate-y-10 opacity-0 bg-gray-500'}
+            ${
+              selectedLocation
+                ? "translate-y-0 opacity-100 bg-accent-start text-white hover:bg-accent-end hover:scale-105 hover:shadow-2xl"
+                : "translate-y-10 opacity-0 bg-gray-500"
+            }
           `}
         >
           <span>Confirm Location</span>
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
           </svg>
         </button>
       </div>

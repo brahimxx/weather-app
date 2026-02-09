@@ -26,9 +26,9 @@
   [data-theme="dark"] {
     /* Dark theme */
     --bg-primary: #000000;
-    --bg-secondary: #1e293b;
+    --bg-secondary: #212121;
     --bg-overlay: rgba(15, 23, 42, 0.9);
-    --bg-glass: rgba(255, 255, 255, 0.05);
+    --bg-glass: #323234;
     --bg-glass-hover: rgba(255, 255, 255, 0.1);
     --bg-selected: rgba(255, 255, 255, 0.15);
     --text-primary: #f1f5f9;
@@ -71,13 +71,7 @@
   }
 
   #root {
-    position: relative;
-    z-index: 1;
-    overflow: hidden;
-    height: 100%;
-    max-width: 500px !important;
-    background-color: var(--bg-secondary);
-    transition: background-color 0.3s ease;
+    @apply overflow-hidden border-[2px] border-white/10 h-screen w-full relative transition-colors duration-300 ease-in-out  max-w-[500px] bg-bg-secondary flex flex-col justify-between md:h-[90vh] md:rounded-[30px] lg:!max-w-[600px] lg:my-[1.25rem] mx-auto z-[1];
   }
 }
 
@@ -95,27 +89,7 @@
 
 /* Responsive Breakpoints */
 @media (min-width: 768px) {
-  #root {
-    height: 90vh;
-  }
-
   body {
     padding: 1.25rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  #root {
-    max-width: 800px;
-    margin: 1.25rem auto;
-    border-radius: 30px;
-    background: var(--bg-glass);
-    backdrop-filter: blur(10px);
-  }
-}
-
-@media (min-width: 1200px) {
-  #root {
-    max-width: 800px;
   }
 }

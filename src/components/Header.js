@@ -19,7 +19,7 @@ const LocationPinIcon = () => (
 
 const Header = ({ weatherInfo, onLocationClick }) => {
   return (
-    <div className="flex flex-row justify-between items-center py-2 gap-4">
+    <div className="flex flex-row justify-between items-center gap-4">
       <div
         onClick={onLocationClick}
         className="flex items-center gap-3 cursor-pointer group p-2 hover:bg-white/5 rounded-lg transition-colors duration-200"

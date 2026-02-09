@@ -12,7 +12,7 @@ const StatCard = ({ icon, label, value }) => {
         <img
           src={icon}
           alt={`${label} Icon`}
-          className="w-7 h-7 p-[5px]  transition-transform duration-300 md:w-12 md:h-12 max-[480px]:p-[5px] "
+          className="w-7 h-7 transition-transform duration-300 md:w-10 md:h-10  "
         />
       </div>
 

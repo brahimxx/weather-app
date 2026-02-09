@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import fetchData from "./services/api";
 import Header from "./components/Header";
 import TheWeather from "./components/TheWeather";
 import StatCardsContainer from "./components/StatCardsContainer";
 import ForecastCardsContainer from "./components/ForecastCardsContainer";
+import TemperatureGraph from "./components/TemperatureGraph";
 import { useWeather } from "./context/WeatherContext";
 
 function WeatherApp() {
@@ -14,13 +15,15 @@ function WeatherApp() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedHourData, setSelectedHourData] = useState(null);
+  const [selectedCardIndex, setSelectedCardIndex] = useState(null);
+  const [forecastTab, setForecastTab] = useState(0);
 
   useEffect(() => {
     const getWeather = async () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await fetchData("current", city);
+        const data = await fetchData("forecast", city);
         setWeatherInfo(data);
       } catch (err) {
         setError("Failed to fetch weather data. Please try again.");
@@ -32,8 +35,9 @@ function WeatherApp() {
     getWeather();
   }, [city]);
 
-  const handleHourSelect = (hourData) => {
+  const handleHourSelect = (hourData, index) => {
     setSelectedHourData(hourData);
+    setSelectedCardIndex(index);
   };
 
   const handleLocationClick = () => {
@@ -48,6 +52,58 @@ function WeatherApp() {
       navigate("/location");
     }
   };
+
+  // Format data for the temperature graph based on active tab
+  const graphData = useMemo(() => {
+    if (!weatherInfo?.forecast?.forecastday) return [];
+
+    const formatTime = (timeStr) => {
+      const date = new Date(timeStr);
+      return date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+    };
+
+    const formatDay = (dateStr) => {
+      return new Date(dateStr).toLocaleDateString("en-US", {
+        weekday: "short",
+      });
+    };
+
+    switch (forecastTab) {
+      case 0: // Today - hourly data
+        return (
+          weatherInfo.forecast.forecastday[0]?.hour?.map((h) => ({
+            time: formatTime(h.time),
+            temp: h.temp_c,
+          })) || []
+        );
+
+      case 1: // Tomorrow - hourly data
+        return (
+          weatherInfo.forecast.forecastday[1]?.hour?.map((h) => ({
+            time: formatTime(h.time),
+            temp: h.temp_c,
+          })) || []
+        );
+
+      case 2: // 3 Days - daily averages
+        return weatherInfo.forecast.forecastday.map((day) => ({
+          time: formatDay(day.date),
+          temp: day.day.avgtemp_c,
+          min: day.day.mintemp_c,
+          max: day.day.maxtemp_c,
+        }));
+
+      default:
+        return [];
+    }
+  }, [weatherInfo, forecastTab]);
+
+  // Get current hour index for marker (only for Today tab)
+  const currentHourIndex = forecastTab === 0 ? new Date().getHours() : null;
 
   if (loading) {
     return (
@@ -98,7 +154,7 @@ function WeatherApp() {
   }
 
   return (
-    <div className="flex flex-col justify-between p-2 h-full overflow-hidden md:p-5 md:h-[90vh] lg:p-8 relative">
+    <div className="bg-bg-secondary flex flex-col justify-between p-2 h-full overflow-hidden md:p-5 md:h-[90vh] lg:p-8 relative">
       <Header
         onClick={updateCity}
         weatherInfo={weatherInfo}
@@ -113,7 +169,31 @@ function WeatherApp() {
         weatherInfo={weatherInfo}
         selectedHourData={selectedHourData}
       />
-      <ForecastCardsContainer city={city} onHourSelect={handleHourSelect} />
+      <ForecastCardsContainer
+        city={city}
+        onHourSelect={handleHourSelect}
+        forecastInfo={weatherInfo}
+        activeTab={forecastTab}
+        onTabChange={(val) => {
+          setForecastTab(val);
+          setSelectedCardIndex(null); // Reset selection on tab change
+          setSelectedHourData(null);
+        }}
+        selectedCardIndex={selectedCardIndex}
+      />
+      <div className="h-[40px]"></div>
+
+      {/* Temperature Graph */}
+      {weatherInfo?.forecast?.forecastday && graphData.length > 0 && (
+        <div className="absolute bottom-0 left-0 right-0 w-full h-[120px]">
+          <TemperatureGraph
+            data={graphData}
+            activeTab={forecastTab}
+            currentHourIndex={currentHourIndex}
+            selectedIndex={selectedCardIndex}
+          />
+        </div>
+      )}
     </div>
   );
 }
