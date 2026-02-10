@@ -17,10 +17,7 @@ const fetchData = async (endpoint, param) => {
       },
     );
     if (isForecast) {
-      console.log(
-        "Forecast days returned:",
-        response.data?.forecast?.forecastday?.length,
-      );
+      // Validating forecast data
     }
     return response.data;
   } catch (error) {

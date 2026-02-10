@@ -95,7 +95,7 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
 
   return (
     <div
-      className="p-2 px-4  md:px-6 max-[480px]:p-2 bg-bg-glass flex flex-row justify-between items-center text-text-primary rounded-[30px] "
+      className="px-6 py-2 bg-bg-glass flex flex-row justify-between items-center text-text-primary rounded-[30px]"
       style={{
         backdropFilter: "blur(10px)",
       }}

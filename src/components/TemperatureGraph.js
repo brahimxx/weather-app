@@ -53,11 +53,6 @@ const TemperatureGraph = ({
   selectedIndex = null,
   onPointSelect,
 }) => {
-  // Use local state only for tracking if we are actively hovering, 
-  // but rely on selectedIndex for the data display to ensure persistence.
-  // Actually, to make "hover = select", we don't even need local state for the data, just maybe for visual feedback if needed.
-  // But strictly following "keep showing the one selected", we can just use selectedIndex.
-
   const [dimensions, setDimensions] = useState({ width: 400, height: 120 });
   const containerRef = useRef(null);
 
@@ -66,7 +61,8 @@ const TemperatureGraph = ({
     const updateDimensions = () => {
       if (containerRef.current) {
         const width = containerRef.current.offsetWidth;
-        setDimensions({ width, height: 120 });
+        const height = containerRef.current.offsetHeight;
+        setDimensions({ width, height });
       }
     };
 
@@ -108,12 +104,11 @@ const TemperatureGraph = ({
   return (
     <div
       ref={containerRef}
-      className="relative"
-      style={{ height: `${height}px` }}
+      className="relative h-full w-full"
     >
       <svg
         width="100%"
-        height={height}
+        height="100%"
         viewBox={`0 0 ${width} ${height}`}
         preserveAspectRatio="none"
         className="overflow-visible"
@@ -207,20 +202,45 @@ const TemperatureGraph = ({
           </g>
         )}
 
-        {/* Invisible hit areas for detection */}
-        {pathPoints.map((point, index) => (
-          <circle
-            key={index}
-            cx={point.x}
-            cy={point.y}
-            r="12"
-            fill="transparent"
-            className="cursor-pointer"
-            onMouseEnter={() => onPointSelect && onPointSelect(index)}
-            onTouchStart={() => onPointSelect && onPointSelect(index)}
-          // Removed onMouseLeave to persist selection
-          />
-        ))}
+        {/* Invisible hit areas for detection - Vertical Strips */}
+        {pathPoints.map((point, index) => {
+          let x, w;
+
+          if (index === 0) {
+            // First point
+            if (pathPoints.length > 1) {
+              x = 0;
+              w = (pathPoints[1].x + point.x) / 2;
+            } else {
+              x = 0; w = width;
+            }
+          } else if (index === pathPoints.length - 1) {
+            // Last point
+            const prevX = pathPoints[index - 1].x;
+            x = (point.x + prevX) / 2;
+            w = width - x;
+          } else {
+            // Middle points
+            const prevX = pathPoints[index - 1].x;
+            const nextX = pathPoints[index + 1].x;
+            x = (point.x + prevX) / 2;
+            w = (nextX - point.x) / 2 + (point.x - prevX) / 2;
+          }
+
+          return (
+            <rect
+              key={index}
+              x={x}
+              y={0}
+              width={w}
+              height={height}
+              fill="transparent"
+              className="cursor-pointer"
+              onMouseEnter={() => onPointSelect && onPointSelect(index)}
+              onTouchStart={() => onPointSelect && onPointSelect(index)}
+            />
+          );
+        })}
       </svg>
 
       {/* Tooltip */}

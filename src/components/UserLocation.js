@@ -47,6 +47,19 @@ function UserLocation({ onClick }) {
 
     setIsLoading(true);
 
+    try {
+      const permissionStatus = await navigator.permissions.query({ name: "geolocation" });
+
+      if (permissionStatus.state === "denied") {
+        alert("Location access is blocked. Please enable permissions in your browser settings to use this feature.");
+        setIsLoading(false);
+        return;
+      }
+    } catch (error) {
+      console.error("Error checking permissions:", error);
+      // Continue to try getCurrentPosition as fallback if permissions API fails
+    }
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const lat = position.coords.latitude;
@@ -55,7 +68,7 @@ function UserLocation({ onClick }) {
         try {
           // Use Geoapify reverse geocoding to get location name
           const locationInfo = await reverseGeocode(lat, lon);
-          
+
           // Pass coords and location info to parent
           onClick(`${lat},${lon}`, locationInfo);
         } catch (error) {
@@ -68,7 +81,12 @@ function UserLocation({ onClick }) {
       },
       (err) => {
         console.error("Geolocation error:", err.message);
-        alert("Unable to get your location. Please enable location permissions.");
+        // Provide more actionable feedback
+        if (err.code === err.PERMISSION_DENIED) {
+          alert("Location access was denied. Please check your browser settings to allow location access.");
+        } else {
+          alert("Unable to get your location. Please check your connection or location settings.");
+        }
         setIsLoading(false);
       },
       {
@@ -82,9 +100,8 @@ function UserLocation({ onClick }) {
   return (
     <div
       onClick={handleLocationClick}
-      className={`w-full h-full flex items-center justify-center cursor-pointer transition-all duration-200 ${
-        isLoading ? "opacity-50 pointer-events-none" : "hover:scale-110"
-      }`}
+      className={`w-full h-full flex items-center justify-center cursor-pointer transition-all duration-200 ${isLoading ? "opacity-50 pointer-events-none" : "hover:scale-110"
+        }`}
       title="Use my current location"
     >
       {isLoading ? <LoadingSpinner /> : <LocationIcon />}

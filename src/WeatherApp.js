@@ -107,24 +107,14 @@ function WeatherApp() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="relative">
-          <div
-            className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin"
-            style={{
-              borderColor:
-                "var(--accent-start) var(--accent-end) var(--accent-end) var(--accent-end)",
-            }}
-          ></div>
-          <div
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 border-4 border-b-transparent rounded-full animate-spin"
-            style={{
-              borderColor:
-                "var(--accent-end) var(--accent-end) var(--accent-end) var(--accent-start)",
-              animationDirection: "reverse",
-              animationDuration: "0.8s",
-            }}
-          ></div>
+      <div className="flex justify-center items-center h-screen bg-bg-secondary">
+        <div className="relative flex flex-col items-center gap-4">
+          <img
+            src={require("./assets/logo.png")}
+            alt="Weather App Logo"
+            className="w-24 h-24 object-contain animate-pulse"
+            style={{ filter: "drop-shadow(0 0 10px rgba(255,255,255,0.2))" }}
+          />
         </div>
       </div>
     );
@@ -154,65 +144,72 @@ function WeatherApp() {
   }
 
   return (
-    <div className="bg-bg-secondary flex flex-col justify-between p-2 h-full overflow-hidden md:p-5 md:h-[90vh] lg:p-8 relative">
-      <Header
-        onClick={updateCity}
-        weatherInfo={weatherInfo}
-        onLocationClick={handleLocationClick}
-      />
+    <div className="bg-bg-secondary flex flex-col h-full w-full relative overflow-hidden">
+      {/* Scrollable Content Area */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 md:p-5 lg:p-8 flex flex-col gap-4 pb-[130px]"> {/* pb matches graph height + text */}
+        <Header
+          onClick={updateCity}
+          weatherInfo={weatherInfo}
+          onLocationClick={handleLocationClick}
+        />
 
-      <TheWeather
-        weatherInfo={weatherInfo}
-        selectedHourData={selectedHourData}
-      />
-      <StatCardsContainer
-        weatherInfo={weatherInfo}
-        selectedHourData={selectedHourData}
-      />
-      <ForecastCardsContainer
-        city={city}
-        onHourSelect={handleHourSelect}
-        forecastInfo={weatherInfo}
-        activeTab={forecastTab}
-        onTabChange={(val) => {
-          setForecastTab(val);
-          setSelectedCardIndex(null); // Reset selection on tab change
-          setSelectedHourData(null);
-        }}
-        selectedCardIndex={selectedCardIndex}
-      />
-      <div className="h-[40px]"></div>
+        <div className="flex flex-col gap-4">
+          <TheWeather
+            weatherInfo={weatherInfo}
+            selectedHourData={selectedHourData}
+          />
+          <StatCardsContainer
+            weatherInfo={weatherInfo}
+            selectedHourData={selectedHourData}
+          />
+          <ForecastCardsContainer
+            city={city}
+            onHourSelect={handleHourSelect}
+            forecastInfo={weatherInfo}
+            activeTab={forecastTab}
+            onTabChange={(val) => {
+              setForecastTab(val);
+              setSelectedCardIndex(null); // Reset selection on tab change
+              setSelectedHourData(null);
+            }}
+            selectedCardIndex={selectedCardIndex}
+          />
+        </div>
+      </div>
 
       {/* Temperature Graph */}
       {weatherInfo?.forecast?.forecastday && graphData.length > 0 && (
-        <div className="absolute bottom-0 left-0 right-0 w-full h-[120px]">
-          <TemperatureGraph
-            data={graphData}
-            activeTab={forecastTab}
-            currentHourIndex={currentHourIndex}
-            selectedIndex={selectedCardIndex}
-            onPointSelect={(index) => {
-              let selectedData = null;
+        <div className="min-h-[180px] absolute bottom-0 left-0 right-0 w-full h-[120px] bg-gradient-to-t from-bg-secondary to-transparent z-10 pointer-events-none">
+          {/* Wrapper to restore pointer events for graph interaction */}
+          <div className="w-full h-full pointer-events-auto">
+            <TemperatureGraph
+              data={graphData}
+              activeTab={forecastTab}
+              currentHourIndex={currentHourIndex}
+              selectedIndex={selectedCardIndex}
+              onPointSelect={(index) => {
+                let selectedData = null;
 
-              switch (forecastTab) {
-                case 0: // Today
-                  selectedData = weatherInfo.forecast.forecastday[0]?.hour?.[index];
-                  break;
-                case 1: // Tomorrow
-                  selectedData = weatherInfo.forecast.forecastday[1]?.hour?.[index];
-                  break;
-                case 2: // 3 Days
-                  selectedData = weatherInfo.forecast.forecastday[index];
-                  break;
-                default:
-                  break;
-              }
+                switch (forecastTab) {
+                  case 0: // Today
+                    selectedData = weatherInfo.forecast.forecastday[0]?.hour?.[index];
+                    break;
+                  case 1: // Tomorrow
+                    selectedData = weatherInfo.forecast.forecastday[1]?.hour?.[index];
+                    break;
+                  case 2: // 3 Days
+                    selectedData = weatherInfo.forecast.forecastday[index];
+                    break;
+                  default:
+                    break;
+                }
 
-              if (selectedData) {
-                handleHourSelect(selectedData, index);
-              }
-            }}
-          />
+                if (selectedData) {
+                  handleHourSelect(selectedData, index);
+                }
+              }}
+            />
+          </div>
         </div>
       )}
     </div>

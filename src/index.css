@@ -8,9 +8,9 @@
     --bg-primary: #f8fafc;
     --bg-secondary: #ffffff;
     --bg-overlay: rgba(255, 255, 255, 0.9);
-    --bg-glass: rgba(255, 255, 255, 0.3);
-    --bg-glass-hover: rgba(255, 255, 255, 0.5);
-    --bg-selected: rgba(255, 255, 255, 0.8);
+    --bg-glass: rgba(0, 0, 0, 0.05);
+    --bg-glass-hover: rgba(0, 0, 0, 0.08);
+    --bg-selected: rgba(0, 0, 0, 0.1);
     --text-primary: #0f172a;
     --text-secondary: #475569;
     --border-primary: rgba(148, 163, 184, 0.3);
@@ -71,7 +71,15 @@
   }
 
   #root {
-    @apply overflow-hidden border-[2px] border-white/10 h-screen w-full relative transition-colors duration-300 ease-in-out  max-w-[500px] bg-bg-secondary flex flex-col justify-between md:h-[90vh] md:rounded-[30px] lg:!max-w-[600px] lg:my-[1.25rem] mx-auto z-[1];
+    @apply overflow-hidden border-[2px] border-white/10 h-screen w-full relative transition-colors duration-300 ease-in-out max-w-[500px] bg-bg-secondary flex flex-col justify-between md:h-[90vh] md:rounded-[30px] mx-auto z-[1];
+  }
+
+  @media (min-width: 1024px) {
+    #root {
+      max-width: 600px !important;
+      margin-top: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
   }
 }
 
@@ -79,9 +87,11 @@
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }

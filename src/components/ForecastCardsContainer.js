@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import ForecastCard from "./ForecastCard";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -11,7 +11,7 @@ function ForecastCardsContainer({
   activeTab,
   onTabChange,
   selectedCardIndex,
-}) {  
+}) {
   // Remove local selectedHour state
   // const [selectedHour, setSelectedHour] = useState(null);
 
@@ -57,7 +57,7 @@ function ForecastCardsContainer({
     " [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [scroll-snap-type:x_mandatory]";
 
   return (
-    <div className="h-[200px] flex flex-col gap-2">
+    <div className=" flex flex-col gap-2">
       <Box
         sx={{
           "& .MuiButtonBase-root .MuiTouchRipple-root": {
@@ -102,7 +102,6 @@ function ForecastCardsContainer({
               fontWeight: 600,
               color: "var(--text-primary)",
               transform: "translateY(-6px) scale(1.02)",
-              boxShadow: "0 8px 20px rgba(2,6,23,0.06)",
               backgroundColor: "transparent",
             },
             "&.Mui-selected, &:active, &:focus": {

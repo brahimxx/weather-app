@@ -7,19 +7,19 @@ const pressureIcon = `${ICON_BASE_URL}barometer.svg`;
 
 const StatCard = ({ icon, label, value }) => {
   return (
-    <div className="flex flex-row p-1 px-2 items-center min-h-[50px] transition-all duration-300 text-text-primary font-medium md:flex-col md:justify-center md:text-center md:p-2 md:min-h-[70px] md:gap-1 max-[480px]:p-1 max-[480px]:min-h-[44px]">
-      <div className="flex flex-row items-center gap-2 font-medium text-xs md:flex-col md:gap-0.5 max-[480px]:text-[13px] max-[480px]:gap-1">
+    <div className=" flex flex-col justify-center text-center p-2 min-h-[70px] gap-1 items-center transition-all duration-300 text-text-primary font-medium">
+      <div className="flex flex-col gap-0.5 items-center font-medium text-xs">
         <img
           src={icon}
           alt={`${label} Icon`}
-          className="w-7 h-7 transition-transform duration-300 md:w-10 md:h-10  "
+          className="w-10 h-10 transition-transform duration-300"
         />
       </div>
 
-      <p className="text-sm font-semibold text-text-primary m-0 md:text-[15px] max-[480px]:text-sm">
+      <p className="text-[15px] font-semibold text-text-primary m-0">
         {value}
       </p>
-      <p className="m-0 text-text-secondary md:text-[12px]">
+      <p className="m-0 text-text-secondary text-[12px]">
         {label === "Precipitation" ? "Rain" : label}
       </p>
     </div>
@@ -32,7 +32,7 @@ const StatCardsContainer = ({ weatherInfo, selectedHourData }) => {
 
   return (
     <div
-      className="flex flex-col rounded-[30px]  md:flex-row justify-around py-1 px-4 "
+      className="flex flex-row justify-around py-2 px-4 rounded-[30px]"
       style={{
         background: "var(--bg-glass)",
         backdropFilter: "blur(10px)",
