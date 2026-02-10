@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 /**
  * Creates a smooth cubic bezier path through data points
  */
-const createSmoothPath = (points, width, height, padding) => {
+const createSmoothPath = (points, width, height, paddingX, paddingY) => {
   if (!points || points.length < 2) return "";
 
   const temps = points.map((p) => p.temp);
@@ -12,9 +12,9 @@ const createSmoothPath = (points, width, height, padding) => {
   const tempRange = maxTemp - minTemp || 1;
 
   const getX = (index) =>
-    padding + (index / (points.length - 1)) * (width - padding * 2);
+    paddingX + (index / (points.length - 1)) * (width - paddingX * 2);
   const getY = (temp) =>
-    padding + (1 - (temp - minTemp) / tempRange) * (height - padding * 2);
+    paddingY + (1 - (temp - minTemp) / tempRange) * (height - paddingY * 2);
 
   const pathPoints = points.map((p, i) => ({
     x: getX(i),
@@ -39,7 +39,7 @@ const createSmoothPath = (points, width, height, padding) => {
     path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
   }
 
-  return { path, pathPoints, minTemp, maxTemp, getX, getY };
+  return { path, pathPoints };
 };
 
 /**
@@ -51,8 +51,13 @@ const TemperatureGraph = ({
   activeTab,
   currentHourIndex = null,
   selectedIndex = null,
+  onPointSelect,
 }) => {
-  const [hoveredPoint, setHoveredPoint] = useState(null);
+  // Use local state only for tracking if we are actively hovering, 
+  // but rely on selectedIndex for the data display to ensure persistence.
+  // Actually, to make "hover = select", we don't even need local state for the data, just maybe for visual feedback if needed.
+  // But strictly following "keep showing the one selected", we can just use selectedIndex.
+
   const [dimensions, setDimensions] = useState({ width: 400, height: 120 });
   const containerRef = useRef(null);
 
@@ -75,17 +80,19 @@ const TemperatureGraph = ({
   }
 
   const { width, height } = dimensions;
-  const padding = 20;
+  const paddingX = 0;
+  const paddingY = 20;
 
-  const { path, pathPoints, getX, getY, minTemp, maxTemp } = createSmoothPath(
+  const { path, pathPoints } = createSmoothPath(
     data,
     width,
     height,
-    padding
+    paddingX,
+    paddingY
   );
 
   // Create gradient fill path (closed)
-  const gradientPath = `${path} L ${pathPoints[pathPoints.length - 1].x} ${height - padding} L ${pathPoints[0].x} ${height - padding} Z`;
+  const gradientPath = `${path} L ${pathPoints[pathPoints.length - 1].x} ${height} L ${pathPoints[0].x} ${height} Z`;
 
   // Find current hour marker position
   const currentMarkerIndex =
@@ -93,10 +100,15 @@ const TemperatureGraph = ({
       ? currentHourIndex
       : null;
 
+  // Determine which point to display (tooltip and vertical line)
+  // We use selectedIndex as the source of truth.
+  const displayIndex = selectedIndex !== null && selectedIndex < pathPoints.length ? selectedIndex : null;
+  const displayPoint = displayIndex !== null ? { ...pathPoints[displayIndex], data: data[displayIndex] } : null;
+
   return (
     <div
       ref={containerRef}
-      className="w-full relative mt-2"
+      className="relative"
       style={{ height: `${height}px` }}
     >
       <svg
@@ -157,77 +169,35 @@ const TemperatureGraph = ({
           </g>
         )}
 
-        {/* Selected point marker */}
-        {selectedIndex !== null &&
-          selectedIndex < pathPoints.length &&
-          pathPoints[selectedIndex] && (
-            <g>
-              <circle
-                cx={pathPoints[selectedIndex].x}
-                cy={pathPoints[selectedIndex].y}
-                r="8"
-                fill="white"
-                fillOpacity="0.2"
-                stroke="white"
-                strokeWidth="1"
-                strokeDasharray="2 2"
-              />
-              <circle
-                cx={pathPoints[selectedIndex].x}
-                cy={pathPoints[selectedIndex].y}
-                r="5"
-                fill="var(--accent-end)"
-                stroke="white"
-                strokeWidth="2"
-                className="drop-shadow-lg"
-              />
-              {/* Vertical line indicator */}
-              <line
-                x1={pathPoints[selectedIndex].x}
-                y1={padding}
-                x2={pathPoints[selectedIndex].x}
-                y2={height - padding}
-                stroke="white"
-                strokeWidth="1"
-                strokeDasharray="4 4"
-                opacity="0.3"
-              />
-            </g>
-          )}
-
-        {/* Invisible hit areas for hover detection */}
-        {pathPoints.map((point, index) => (
-          <circle
-            key={index}
-            cx={point.x}
-            cy={point.y}
-            r="12"
-            fill="transparent"
-            className="cursor-pointer"
-            onMouseEnter={() => setHoveredPoint({ ...point, index, data: data[index] })}
-            onMouseLeave={() => setHoveredPoint(null)}
-            onTouchStart={() => setHoveredPoint({ ...point, index, data: data[index] })}
-          />
-        ))}
-
-        {/* Hovered point indicator */}
-        {hoveredPoint && (
+        {/* Selected/Hovered point visualization */}
+        {displayPoint && (
           <g>
             {/* Vertical line */}
             <line
-              x1={hoveredPoint.x}
-              y1={padding}
-              x2={hoveredPoint.x}
-              y2={height - padding}
+              x1={displayPoint.x}
+              y1={paddingY}
+              x2={displayPoint.x}
+              y2={height}
               stroke="var(--text-secondary)"
               strokeWidth="1"
               strokeDasharray="4 4"
               opacity="0.5"
             />
+            {/* Selection Marker Ring */}
+            <circle
+              cx={displayPoint.x}
+              cy={displayPoint.y}
+              r="8"
+              fill="white"
+              fillOpacity="0.2"
+              stroke="white"
+              strokeWidth="1"
+              strokeDasharray="2 2"
+            />
             {/* Point circle */}
             <circle
-              cx={hoveredPoint.x}
-              cy={hoveredPoint.y}
+              cx={displayPoint.x}
+              cy={displayPoint.y}
               r="6"
               fill="white"
               stroke="var(--accent-start)"
@@ -236,24 +206,39 @@ const TemperatureGraph = ({
             />
           </g>
         )}
+
+        {/* Invisible hit areas for detection */}
+        {pathPoints.map((point, index) => (
+          <circle
+            key={index}
+            cx={point.x}
+            cy={point.y}
+            r="12"
+            fill="transparent"
+            className="cursor-pointer"
+            onMouseEnter={() => onPointSelect && onPointSelect(index)}
+            onTouchStart={() => onPointSelect && onPointSelect(index)}
+          // Removed onMouseLeave to persist selection
+          />
+        ))}
       </svg>
 
       {/* Tooltip */}
-      {hoveredPoint && (
+      {displayPoint && (
         <div
           className="absolute pointer-events-none z-10 px-3 py-2 rounded-xl shadow-lg transform -translate-x-1/2 transition-all duration-150"
           style={{
-            left: hoveredPoint.x,
-            top: Math.max(hoveredPoint.y - 55, 5),
+            left: displayPoint.x,
+            top: Math.max(displayPoint.y - 75, -40),
             background: "var(--bg-secondary)",
             border: "1px solid var(--border-primary)",
           }}
         >
           <div className="text-[11px] text-text-secondary font-medium text-center">
-            {hoveredPoint.data.time}
+            {displayPoint.data.time}
           </div>
           <div className="text-[15px] font-bold text-text-primary text-center">
-            {Math.round(hoveredPoint.data.temp)}°
+            {Math.round(displayPoint.data.temp)}°
           </div>
           {/* Tooltip arrow */}
           <div

@@ -191,6 +191,27 @@ function WeatherApp() {
             activeTab={forecastTab}
             currentHourIndex={currentHourIndex}
             selectedIndex={selectedCardIndex}
+            onPointSelect={(index) => {
+              let selectedData = null;
+
+              switch (forecastTab) {
+                case 0: // Today
+                  selectedData = weatherInfo.forecast.forecastday[0]?.hour?.[index];
+                  break;
+                case 1: // Tomorrow
+                  selectedData = weatherInfo.forecast.forecastday[1]?.hour?.[index];
+                  break;
+                case 2: // 3 Days
+                  selectedData = weatherInfo.forecast.forecastday[index];
+                  break;
+                default:
+                  break;
+              }
+
+              if (selectedData) {
+                handleHourSelect(selectedData, index);
+              }
+            }}
           />
         </div>
       )}
