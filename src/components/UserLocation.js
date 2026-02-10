@@ -1,4 +1,4 @@
-import { useUserLocation } from "../context/LocationContext";
+
 import { reverseGeocode } from "../services/locationService";
 import { useState } from "react";
 
@@ -36,7 +36,6 @@ const LoadingSpinner = () => (
 );
 
 function UserLocation({ onClick }) {
-  const { requestLocation } = useUserLocation();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLocationClick = async () => {
