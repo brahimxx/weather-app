@@ -24,7 +24,7 @@ const Header = ({ weatherInfo, onLocationClick }) => {
         onClick={onLocationClick}
         className="flex items-center gap-3 cursor-pointer group p-2 hover:bg-white/5 rounded-lg transition-colors duration-200"
       >
-        <div className="p-2 bg-white/10 rounded-full group-hover:bg-white/20 transition-colors hidden sm:block">
+        <div className="p-2 bg-white/10 rounded-full group-hover:bg-white/20 transition-colors sm:block">
           <LocationPinIcon />
         </div>
         <div className="flex flex-col">

@@ -95,19 +95,19 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
 
   return (
     <div
-      className="px-6 py-2 bg-bg-glass flex flex-row justify-between items-center text-text-primary rounded-[30px]"
+      className="px-6 bg-bg-glass flex flex-row justify-between items-center text-text-primary rounded-[30px]"
       style={{
         backdropFilter: "blur(10px)",
       }}
     >
       <div className="flex flex-col  gap-1">
-        <p className="text-sm md:text-base font-semibold text-text-primary m-0">
+        <p className="text-sm md:text-[12px] font-semibold text-text-primary m-0">
           {formatDateTime(dateTimeString)}
         </p>
-        <p className="text-[clamp(8px,2vw,14px)] text-text-secondary font-medium m-0">
+        <p className="text-[12px] text-text-secondary font-medium m-0">
           {displayData?.condition?.text || "Rainy"}
         </p>
-        <div className="text-[clamp(36px,8vw,48px)] font-semibold text-text-primary leading-none">
+        <div className="text-[38px] font-semibold text-text-primary leading-none">
           <span>{Math.round(displayData?.temp_c || 19)}</span>
           <span className="text-[0.4em] align-super font-medium">°C</span>
         </div>
@@ -115,7 +115,7 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
       <img
         src={iconSrc}
         alt="Weather Icon"
-        className="w-[150px] h-full"
+        className="w-[130px] h-[120px] object-contain"
         style={{ filter: "drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2))" }}
       />
     </div>

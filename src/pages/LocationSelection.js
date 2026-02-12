@@ -71,7 +71,7 @@ const LocationSelection = () => {
   };
 
   return (
-    <div className="h-screen w-full relative overflow-hidden">
+    <div className="h-dvh w-full relative overflow-hidden">
       {/* Full Screen Map Layer */}
       <div className="absolute inset-0 z-0">
         <MapContainer

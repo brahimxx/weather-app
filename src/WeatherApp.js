@@ -168,8 +168,9 @@ function WeatherApp() {
     <>
       {/* Loading Screen Overlay - fades out when app is ready */}
       <div
-        className={`fixed inset-0 flex justify-center items-center bg-bg-secondary z-50 transition-opacity duration-500 ${loading || !appReady ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 flex justify-center items-center bg-bg-secondary z-50 transition-opacity duration-500 ${
+          loading || !appReady ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       >
         <div className="relative flex flex-col items-center gap-4">
           <img
@@ -182,9 +183,9 @@ function WeatherApp() {
       </div>
 
       {/* Main App Content - renders underneath loading screen */}
-      <div className="bg-bg-secondary flex flex-col h-full w-full relative overflow-hidden">
+      <div className="overflow-hidden bg-bg-secondary h-dvh flex flex-col min-h-[700px] w-full gap-4 relative">
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 md:p-5 lg:p-8 flex flex-col gap-4 pb-[130px]">
+        <div className="overflow-y-auto pt-2 md:pt-5 lg:pt-8 px-2 md:px-5 lg:px-8 flex flex-col gap-4">
           {/* pb matches graph height + text */}
           <Header
             onClick={updateCity}
@@ -192,33 +193,31 @@ function WeatherApp() {
             onLocationClick={handleLocationClick}
           />
 
-          <div className="flex flex-col gap-4">
-            <TheWeather
-              weatherInfo={weatherInfo}
-              selectedHourData={selectedHourData}
-            />
-            <StatCardsContainer
-              weatherInfo={weatherInfo}
-              selectedHourData={selectedHourData}
-            />
-            <ForecastCardsContainer
-              city={city}
-              onHourSelect={handleHourSelect}
-              forecastInfo={weatherInfo}
-              activeTab={forecastTab}
-              onTabChange={(val) => {
-                setForecastTab(val);
-                setSelectedCardIndex(null); // Reset selection on tab change
-                setSelectedHourData(null);
-              }}
-              selectedCardIndex={selectedCardIndex}
-            />
-          </div>
+          <TheWeather
+            weatherInfo={weatherInfo}
+            selectedHourData={selectedHourData}
+          />
+          <StatCardsContainer
+            weatherInfo={weatherInfo}
+            selectedHourData={selectedHourData}
+          />
         </div>
+        <ForecastCardsContainer
+          city={city}
+          onHourSelect={handleHourSelect}
+          forecastInfo={weatherInfo}
+          activeTab={forecastTab}
+          onTabChange={(val) => {
+            setForecastTab(val);
+            setSelectedCardIndex(null); // Reset selection on tab change
+            setSelectedHourData(null);
+          }}
+          selectedCardIndex={selectedCardIndex}
+        />
 
         {/* Temperature Graph */}
         {weatherInfo?.forecast?.forecastday && graphData.length > 0 && (
-          <div className="min-h-[180px] absolute bottom-0 left-0 right-0 w-full h-[120px] bg-gradient-to-t from-bg-secondary to-transparent z-10 pointer-events-none">
+          <div className=" absolute bottom-0 left-0 right-0 w-full h-full max-h-[190px] bg-gradient-to-t from-bg-secondary to-transparent z-10 pointer-events-none">
             {/* Wrapper to restore pointer events for graph interaction */}
             <div className="w-full h-full pointer-events-auto">
               <TemperatureGraph
@@ -231,10 +230,12 @@ function WeatherApp() {
 
                   switch (forecastTab) {
                     case 0: // Today
-                      selectedData = weatherInfo.forecast.forecastday[0]?.hour?.[index];
+                      selectedData =
+                        weatherInfo.forecast.forecastday[0]?.hour?.[index];
                       break;
                     case 1: // Tomorrow
-                      selectedData = weatherInfo.forecast.forecastday[1]?.hour?.[index];
+                      selectedData =
+                        weatherInfo.forecast.forecastday[1]?.hour?.[index];
                       break;
                     case 2: // 3 Days
                       selectedData = weatherInfo.forecast.forecastday[index];

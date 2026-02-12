@@ -84,7 +84,7 @@ const TemperatureGraph = ({
     width,
     height,
     paddingX,
-    paddingY
+    paddingY,
   );
 
   // Create gradient fill path (closed)
@@ -98,14 +98,17 @@ const TemperatureGraph = ({
 
   // Determine which point to display (tooltip and vertical line)
   // We use selectedIndex as the source of truth.
-  const displayIndex = selectedIndex !== null && selectedIndex < pathPoints.length ? selectedIndex : null;
-  const displayPoint = displayIndex !== null ? { ...pathPoints[displayIndex], data: data[displayIndex] } : null;
+  const displayIndex =
+    selectedIndex !== null && selectedIndex < pathPoints.length
+      ? selectedIndex
+      : null;
+  const displayPoint =
+    displayIndex !== null
+      ? { ...pathPoints[displayIndex], data: data[displayIndex] }
+      : null;
 
   return (
-    <div
-      ref={containerRef}
-      className="relative h-full w-full"
-    >
+    <div ref={containerRef} className="relative h-full w-full">
       <svg
         width="100%"
         height="100%"
@@ -115,11 +118,31 @@ const TemperatureGraph = ({
       >
         {/* Gradient definitions */}
         <defs>
-          <linearGradient id={`tempGradient-${activeTab}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--accent-start)" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="var(--accent-end)" stopOpacity="0.05" />
+          <linearGradient
+            id={`tempGradient-${activeTab}`}
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+          >
+            <stop
+              offset="0%"
+              stopColor="var(--accent-start)"
+              stopOpacity="0.4"
+            />
+            <stop
+              offset="100%"
+              stopColor="var(--accent-end)"
+              stopOpacity="0.05"
+            />
           </linearGradient>
-          <linearGradient id={`lineGradient-${activeTab}`} x1="0" y1="0" x2="1" y2="0">
+          <linearGradient
+            id={`lineGradient-${activeTab}`}
+            x1="0"
+            y1="0"
+            x2="1"
+            y2="0"
+          >
             <stop offset="0%" stopColor="var(--accent-start)" />
             <stop offset="100%" stopColor="var(--accent-end)" />
           </linearGradient>
@@ -170,7 +193,7 @@ const TemperatureGraph = ({
             {/* Vertical line */}
             <line
               x1={displayPoint.x}
-              y1={paddingY}
+              y1={displayPoint.y}
               x2={displayPoint.x}
               y2={height}
               stroke="var(--text-secondary)"
@@ -212,7 +235,8 @@ const TemperatureGraph = ({
               x = 0;
               w = (pathPoints[1].x + point.x) / 2;
             } else {
-              x = 0; w = width;
+              x = 0;
+              w = width;
             }
           } else if (index === pathPoints.length - 1) {
             // Last point
@@ -246,10 +270,20 @@ const TemperatureGraph = ({
       {/* Tooltip */}
       {displayPoint && (
         <div
-          className="absolute pointer-events-none z-10 px-3 py-2 rounded-xl shadow-lg transform -translate-x-1/2 transition-all duration-150"
+          className="absolute pointer-events-none z-10 px-3 py-2 rounded-xl shadow-lg transition-all duration-150"
           style={{
-            left: displayPoint.x,
+            left:
+              displayPoint.x < 30
+                ? "0px"
+                : displayPoint.x > width - 30
+                ? "auto"
+                : displayPoint.x,
+            right: displayPoint.x > width - 30 ? "0px" : "auto",
             top: Math.max(displayPoint.y - 75, -40),
+            transform:
+              displayPoint.x < 30 || displayPoint.x > width - 30
+                ? "none"
+                : "translateX(-50%)",
             background: "var(--bg-secondary)",
             border: "1px solid var(--border-primary)",
           }}
@@ -262,9 +296,17 @@ const TemperatureGraph = ({
           </div>
           {/* Tooltip arrow */}
           <div
-            className="absolute left-1/2 transform -translate-x-1/2 w-0 h-0"
+            className="absolute w-0 h-0"
             style={{
               bottom: "-6px",
+              left:
+                displayPoint.x < 30
+                  ? displayPoint.x
+                  : displayPoint.x > width - 30
+                  ? "auto"
+                  : "50%",
+              right: displayPoint.x > width - 30 ? width - displayPoint.x : "auto",
+              transform: "translateX(-50%)",
               borderLeft: "6px solid transparent",
               borderRight: "6px solid transparent",
               borderTop: "6px solid var(--bg-secondary)",

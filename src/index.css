@@ -76,7 +76,7 @@
 
   @media (min-width: 1024px) {
     #root {
-      max-width: 600px !important;
+      max-width: 500px !important;
       margin-top: 1.25rem;
       margin-bottom: 1.25rem;
     }
