@@ -149,22 +149,23 @@ const TemperatureGraph = ({
         </defs>
 
         {/* Gradient fill under curve */}
-        <path
-          d={gradientPath}
-          fill={`url(#tempGradient-${activeTab})`}
-          className="transition-all duration-500 ease-out"
-        />
+        <g key={`graph-${activeTab}`} className="animate-fade-in">
+          <path
+            d={gradientPath}
+            fill={`url(#tempGradient-${activeTab})`}
+            className="transition-opacity duration-500 ease-out"
+          />
 
-        {/* Main curve line */}
-        <path
-          d={path}
-          fill="none"
-          stroke={`url(#lineGradient-${activeTab})`}
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="transition-all duration-500 ease-out"
-        />
+          {/* Main curve line */}
+          <path
+            d={path}
+            fill="none"
+            stroke={`url(#lineGradient-${activeTab})`}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </g>
 
         {/* Current time marker */}
         {currentMarkerIndex !== null && (

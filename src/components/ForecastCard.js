@@ -141,7 +141,7 @@ function ForecastCard({
 
   return (
     <div
-      className={`min-w-[65px] min-h-[80px] max-h-[120px] flex flex-col justify-center items-center gap-1 rounded-2xl p-1 transition-all duration-300 cursor-pointer flex-shrink-0 scroll-snap-align-start md:min-w-[70px] md:min-h-[90px] md:py-2 md:px-4 max-[480px]:min-w-14 max-[480px]:min-h-[75px] max-[480px]:p-1 max-[480px]:rounded-xl backdrop-blur-[10px] border-2 outline-none ${
+      className={`min-w-[65px] min-h-[80px] max-h-[120px] flex flex-col justify-center items-center gap-1 rounded-2xl p-1 transition-all duration-300 cursor-pointer flex-shrink-0 scroll-snap-align-start md:min-w-[70px] md:min-h-[90px] md:py-2 md:px-4 max-[480px]:min-w-14 max-[480px]:min-h-[75px] max-[480px]:p-1 max-[480px]:rounded-xl backdrop-blur-[10px] border-2 outline-none transform-gpu ${
         isSelected
           ? "bg-[var(--bg-selected)] border-[var(--bg-selected)] -translate-y-[2px]"
           : "bg-[var(--bg-glass)] border-transparent hover:-translate-y-1 hover:bg-[var(--bg-glass-hover)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]"
