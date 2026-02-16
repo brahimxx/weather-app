@@ -126,11 +126,9 @@ function ForecastCard({
   if (isCurrentHour) {
     forecastTime = "now";
   } else {
-    if (index === 23) {
-      forecastTime = "00:00";
-    } else {
-      forecastTime = String(index + 1).padStart(2, "0") + ":00";
-    }
+    // Fix: Display the actual hour index, not index + 1
+    // index 0 -> 00:00, index 14 -> 14:00
+    forecastTime = String(index).padStart(2, "0") + ":00";
   }
 
   const isWeekView = is_week === 2;

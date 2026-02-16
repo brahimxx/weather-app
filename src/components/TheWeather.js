@@ -69,6 +69,7 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
     const timeStr = date.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
+      hour12: false,
     });
 
     if (isToday) {
@@ -79,6 +80,7 @@ const TheWeather = ({ weatherInfo, selectedHourData }) => {
       weekday: "long",
       hour: "numeric",
       minute: "2-digit",
+      hour12: false,
     });
   };
 

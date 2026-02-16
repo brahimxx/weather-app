@@ -20,13 +20,18 @@ function ForecastCardsContainer({
     // setSelectedHour(null); // Reset managed by parent now
 
     // When switching to Today tab, auto-select current hour
-    if (newValue === 0 && forecastInfo) {
-      const currentHour = new Date().getHours();
-      const currentHourData =
-        forecastInfo?.forecast?.forecastday?.[0]?.hour?.[currentHour];
-      if (currentHourData && onHourSelect) {
+    if (newValue === 0 && forecastInfo?.location?.localtime) {
+      const locationHour = new Date(forecastInfo.location.localtime).getHours();
+      // Select the current hour of the region
+      let targetIndex = locationHour;
+      if (targetIndex > 23) targetIndex = 23; 
+
+      const hourData =
+        forecastInfo?.forecast?.forecastday?.[0]?.hour?.[targetIndex];
+        
+      if (hourData && onHourSelect) {
         setTimeout(() => {
-          onHourSelect(currentHourData, currentHour); // Pass index
+          onHourSelect(hourData, targetIndex); 
         }, 100);
       }
     }
@@ -41,12 +46,16 @@ function ForecastCardsContainer({
 
   useEffect(() => {
     // Auto-select current hour on Today tab when city changes
-    if (forecastInfo && activeTab === 0) {
-      const currentHour = new Date().getHours();
-      const currentHourData =
-        forecastInfo?.forecast?.forecastday?.[0]?.hour?.[currentHour];
-      if (currentHourData && onHourSelect) {
-        onHourSelect(currentHourData, currentHour);
+    if (forecastInfo?.location?.localtime && activeTab === 0) {
+      const locationHour = new Date(forecastInfo.location.localtime).getHours();
+      let targetIndex = locationHour;
+      if (targetIndex > 23) targetIndex = 23;
+
+      const hourData =
+        forecastInfo?.forecast?.forecastday?.[0]?.hour?.[targetIndex];
+        
+      if (hourData && onHourSelect) {
+        onHourSelect(hourData, targetIndex);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

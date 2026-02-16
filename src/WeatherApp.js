@@ -116,7 +116,10 @@ function WeatherApp() {
   }, [weatherInfo, forecastTab]);
 
   // Get current hour index for marker (only for Today tab)
-  const currentHourIndex = forecastTab === 0 ? new Date().getHours() : null;
+  const currentHourIndex = useMemo(() => {
+    if (forecastTab !== 0 || !weatherInfo?.location?.localtime) return null;
+    return new Date(weatherInfo.location.localtime).getHours();
+  }, [forecastTab, weatherInfo]);
 
   if (error) {
     return (
